@@ -50,7 +50,8 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
 
-                
+                user = sh(returnStdout: true, script: 'id -u').trim()
+                group = sh(returnStdout: true, script: 'id -g').trim()
                 sh '''
                 
                 # Build with Jtest SA/UT/monitor
@@ -72,8 +73,8 @@ pipeline {
                 license.network.password=${ls_pass}
                 build.id="${buildId}"
                 dtp.url="${dtp_url}"
-                dtp.user="dtp_user"
-                dtp.password="dtp_pass"
+                dtp.user="${dtp_user}"
+                dtp.password="${dtp_pass}"
                 
                 dtp.project=${project_name}" >> jenkins/jtest/jtestcli.properties
                 
@@ -82,7 +83,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u "${BUILD_USER_ID}:${BUILD_USER_ID}" \
+                -u "$user:$group" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jenkins/jtest) /bin/bash -c " \
