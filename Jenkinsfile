@@ -41,8 +41,7 @@ pipeline {
                 checkout scm
                 // build the project                
                 echo "Building ${env.JOB_NAME}..."
-                // checkout jenkins deps
-                sh "git clone 'https://github.com/gtrofimov/jenkins.git' "
+                // Debug
                 sh "ls -la"
             }
         }
@@ -77,24 +76,24 @@ pipeline {
                 dtp.user="${dtp_user}"
                 dtp.password="${dtp_pass}"
                 
-                dtp.project=${project_name}" >> jenkins/jtest/jtestcli.properties
+                dtp.project=${project_name}" >> jtest/jtestcli.properties
                 
                 # Debug: Print jtestcli.properties file
-                cat jenkins/jtest/jtestcli.properties
+                cat jtest/jtestcli.properties
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
                 -u "$user:$group" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
-                $(docker build -q ./jenkins/jtest) /bin/bash -c " \
+                $(docker build -q ./jtest) /bin/bash -c " \
                 mvn \
                 -Dmaven.test.failure.ignore=true \
                 test-compile jtest:agent \
                 test jtest:jtest \
                 -s /home/parasoft/.m2/settings.xml \
                 -Djtest.settings='/home/parasoft/jtestcli.properties' \
-                -Djtest.config='jenkins/jtest/${saConfig}' \
+                -Djtest.config='jtest/${saConfig}' \
                 -Djtest.report.coverage.images="${unitCovImage}" \
                 -Dproperty.report.dtp.publish=true; \
                 mvn \
@@ -123,7 +122,7 @@ pipeline {
                 -p 8050:8050 \
                 -p 61616:61616 \
                 -p 9001:9001 \
-                --env-file "$PWD/jenkins/jtest/monitor.env" \
+                --env-file "$PWD/jtest/monitor.env" \
                 -v "$PWD/monitor:/home/docker/jtest/monitor" \
                 --name parabankv1 \
                 parasoft/parabank
@@ -197,14 +196,14 @@ pipeline {
                 dtp.url=${dtp_url}
                 dtp.user=demo
                 dtp.password=demo-user
-                dtp.project=${project_name}" >> jenkins/jtest/jtestcli.properties
+                dtp.project=${project_name}" >> jtest/jtestcli.properties
 
                 # Run Jtest command to publish test results
                 docker run --rm -i \
                 -u 0:0 \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
-                $(docker build -q ./jenkins/jtest) \
+                $(docker build -q ./jtest) \
                 jtestcli \
                 -settings /home/parasoft/jtestcli.properties \
                 -staticcoverage "monitor/static_coverage.xml" \
