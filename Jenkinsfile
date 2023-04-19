@@ -57,10 +57,6 @@ pipeline {
                 # Create Folder for monitor
                 mkdir monitor
                 
-                user = sh(returnStdout: true, script: 'id -u').trim()
-                group = sh(returnStdout: true, script: 'id -g').trim()
-
-                
                 # Set Up and write .properties file
                 echo $"
                 parasoft.eula.accepted=true
@@ -83,7 +79,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u "$user:$group" \
+                -u "jenkins:jenkins" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jtest) /bin/bash -c " \
