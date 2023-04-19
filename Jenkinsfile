@@ -16,14 +16,15 @@ pipeline {
         ls_pass="${PARASOFT_LS_PASS}"
         
         // Parasoft Jtest Settings
-        codeCovConfig="jtest.dtp://CalculateApplicationCoverage"    
+        saConfig="UTSA.properties"
+        codeCovConfig="CalculateApplicationCoverage.properties"    
         unitCovImage="${project_name};${project_name}_UnitTest"
 
         // Parasoft SOAtest Settings
         fucntionalCovImage="${project_name};${project_name}_FunctionalTest"
         
         // Parasoft DTP Settings
-        dtp_url="${dtp_url}"
+        dtp_url="${DTP_URL}"
         dtp_publish=false
 
         }
@@ -38,6 +39,7 @@ pipeline {
                 echo "Building ${env.JOB_NAME}..."
                 // checkout jenkins deps
                 sh "git clone 'https://github.com/gtrofimov/jenkins.git' "
+                sh "ls -la"
             }
         }
         stage('Build') {
@@ -64,7 +66,7 @@ pipeline {
                 dtp.url=${dtp_url}
                 dtp.user=demo
                 dtp.password=demo-user
-                report.coverage.images="${unitCovImage}"
+                
                 dtp.project=${project_name}" >> jenkins/jtest/jtestcli.properties
                 
                 # Debug: Print jtestcli.properties file
@@ -84,6 +86,7 @@ pipeline {
                 -s /home/parasoft/.m2/settings.xml \
                 -Djtest.settings='/home/parasoft/jtestcli.properties' \
                 -Djtest.config='jtest.dtp://UTSA' \
+                -Djtest.report.coverage.images="${unitCovImage}" \
                 -Dproperty.report.dtp.publish=true; \
                 mvn \
                 -DskipTests=true \

@@ -2,6 +2,7 @@
 /target/
 hs_err_*.log
 *.log
+.env
 
 # Parasoft-specific:
 .parasoft
