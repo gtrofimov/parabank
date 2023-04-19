@@ -49,12 +49,16 @@ pipeline {
         stage('Build') {
             when { equals expected: true, actual: true }
             steps {
+
+                
                 sh '''
                 
                 # Build with Jtest SA/UT/monitor
 
                 # Create Folder for monitor
                 mkdir monitor
+
+
                 
                 # Set Up and write .properties file
                 echo $"
@@ -78,7 +82,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u ${BUILD_USER_ID}:${BUILD_USER_ID} + \
+                -u "${BUILD_USER_ID}:${BUILD_USER_ID}" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jenkins/jtest) /bin/bash -c " \
