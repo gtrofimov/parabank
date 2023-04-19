@@ -27,6 +27,8 @@ pipeline {
         dtp_url="${DTP_URL}"
         dtp_publish=false
 
+        // Build Triggers
+
         }
     stages {
         stage('Configre Workspace') {
@@ -43,7 +45,7 @@ pipeline {
             }
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 sh '''
                 
@@ -78,14 +80,13 @@ pipeline {
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jenkins/jtest) /bin/bash -c " \
-                cd parabank; \
                 mvn \
                 -Dmaven.test.failure.ignore=true \
                 test-compile jtest:agent \
                 test jtest:jtest \
                 -s /home/parasoft/.m2/settings.xml \
                 -Djtest.settings='/home/parasoft/jtestcli.properties' \
-                -Djtest.config='jtest.dtp://UTSA' \
+                -Djtest.config='jenkins/jtest/${saConfig}' \
                 -Djtest.report.coverage.images="${unitCovImage}" \
                 -Dproperty.report.dtp.publish=true; \
                 mvn \
