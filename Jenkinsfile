@@ -50,15 +50,16 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
 
-                user = sh(returnStdout: true, script: 'id -u').trim()
-                group = sh(returnStdout: true, script: 'id -g').trim()
+
                 sh '''
                 
                 # Build with Jtest SA/UT/monitor
 
                 # Create Folder for monitor
                 mkdir monitor
-
+                
+                user = sh(returnStdout: true, script: 'id -u').trim()
+                group = sh(returnStdout: true, script: 'id -g').trim()
 
                 
                 # Set Up and write .properties file
