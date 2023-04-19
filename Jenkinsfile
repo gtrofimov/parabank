@@ -25,6 +25,8 @@ pipeline {
         
         // Parasoft DTP Settings
         dtp_url="${DTP_URL}"
+        dtp_user="demo"
+        dtp_pass="demo-user"
         dtp_publish=false
 
         // Build Triggers
@@ -65,9 +67,9 @@ pipeline {
                 license.network.user=${ls_user}
                 license.network.password=${ls_pass}
                 build.id="${buildId}"
-                dtp.url=${dtp_url}
-                dtp.user=demo
-                dtp.password=demo-user
+                dtp.url="${dtp_url}"
+                dtp.user="dtp_user"
+                dtp.password="dtp_pass"
                 
                 dtp.project=${project_name}" >> jenkins/jtest/jtestcli.properties
                 
