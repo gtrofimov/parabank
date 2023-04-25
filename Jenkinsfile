@@ -88,7 +88,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u $JUID:$JGID \
+                -u "$JUID:$JGID" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jtest) /bin/bash -c " \
