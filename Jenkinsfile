@@ -273,6 +273,7 @@ pipeline {
     }
 
     post {
+        when { equals expected: true, actual: false}
         always {
             archiveArtifacts artifacts: '**/target/*.war, **/target/jtest/**, **/soatest/report/**',
                 fingerprint: true, 
