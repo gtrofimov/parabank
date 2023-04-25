@@ -45,7 +45,7 @@ pipeline {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
                 // build the project                
-                echo "Building ${env.JOB_NAME}... with $UID:${env.GID}"
+                echo "Building ${env.JOB_NAME}..."
                 // Debug
                 sh "ls -la"
 
