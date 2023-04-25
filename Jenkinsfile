@@ -41,8 +41,8 @@ pipeline {
                 checkout scm
                 // set UID:GID
                 sh  '''
-                    export UID=$(id -u jenkins)
-                    export GID=$(id -g jenkins)
+                    export JUID=$(id -u jenkins)
+                    export JGID=$(id -g jenkins)
                     echo "Runnig as User/Group: $UID:$GID"
                     '''
                 // build the project                
