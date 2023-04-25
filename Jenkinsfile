@@ -43,7 +43,7 @@ pipeline {
                 sh  '''
                     export JUID=$(id -u jenkins)
                     export JGID=$(id -g jenkins)
-                    echo "Runnig as User/Group: $UID:$GID"
+                    echo "Runnig as User/Group: $JUID:$JGID"
                     '''
                 // build the project                
                 echo "Building ${env.JOB_NAME}..."
@@ -53,7 +53,7 @@ pipeline {
             }
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
 
 
@@ -88,7 +88,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u 995:991 \
+                -u $JUID:$JGID \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jtest) /bin/bash -c " \
