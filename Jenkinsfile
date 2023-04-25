@@ -4,6 +4,7 @@ pipeline {
         skipDefaultCheckout(true)
     }
     environment {
+
         // App Settings
         parabank_port=8090
         project_name="Parabank_Master"
@@ -45,8 +46,14 @@ pipeline {
                     export JGID=$(id -g jenkins)
                     echo "Runnig as User/Group: $JUID:$JGID"
                     '''
+                script {
+                    env.GID = sh(
+                    script: 'id -g jenkins',
+                    returnStdout: true
+                    ).trim()
+                    }   
                 // build the project                
-                echo "Building ${env.JOB_NAME}..."
+                echo "Building ${env.JOB_NAME}... with ${env.UID}:${env.GID}"
                 // Debug
                 sh "ls -la"
 
@@ -88,7 +95,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u "$JUID:$JGID" \
+                -u "$UID:$GID" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jtest) /bin/bash -c " \
