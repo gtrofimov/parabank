@@ -6,10 +6,10 @@ pipeline {
     environment {
 
         // App Settings
-        parabank_port=8090
+        app_name="parabankv1"
+        app_port=8090
         project_name="Parabank_Master"
         buildId="${project_name}-${BUILD_ID}"
-
         
         // Parasoft Licenses
         ls_url="${PARASOFT_LS_URL}"
@@ -34,26 +34,18 @@ pipeline {
 
         }
     stages {
-        stage('Configre Workspace') {
+        stage('Configre Job') {
             steps {
                 // Clean before build
                 cleanWs()
                 // Checkout project
                 checkout scm
-                // set UID:GID
-                sh  '''
-                    export JUID=$(id -u jenkins)
-                    export JGID=$(id -g jenkins)
-                    echo "Runnig as User/Group: $JUID:$JGID"
-                    '''
+                // set GID
                 script {
-                    env.GID = sh(
-                    script: 'id -g jenkins',
-                    returnStdout: true
-                    ).trim()
-                    }   
+                    env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
+                }
                 // build the project                
-                echo "Building ${env.JOB_NAME}... with ${env.UID}:${env.GID}"
+                echo "Building ${env.JOB_NAME}... with $UID:${env.GID}"
                 // Debug
                 sh "ls -la"
 
@@ -62,14 +54,10 @@ pipeline {
         stage('Build') {
             when { equals expected: true, actual: true }
             steps {
-
-
-                sh '''
+                // Build with Jtest SA/UT/monitor
                 
-                # Build with Jtest SA/UT/monitor
-                # get jeknins uid
-
-
+                // Set Up .propeties file
+                sh '''
                 # Create Folder for monitor
                 mkdir monitor
                 
@@ -87,13 +75,14 @@ pipeline {
                 dtp.url="${dtp_url}"
                 dtp.user="${dtp_user}"
                 dtp.password="${dtp_pass}"
-                
                 dtp.project=${project_name}" >> jtest/jtestcli.properties
                 
                 # Debug: Print jtestcli.properties file
                 cat jtest/jtestcli.properties
+                '''
 
-                # Run Maven build with Jtest tasks via Docker
+                // Run Maven build with Jtest tasks via Docker
+                sh '''
                 docker run --rm -i \
                 -u "$UID:$GID" \
                 -v "$PWD:$PWD" \
@@ -114,32 +103,38 @@ pipeline {
                 -s jtest/.m2/settings.xml \
                 -Djtest.settings='jtest/jtestcli.properties'; \
                 "
+                '''
 
-                # Unzip monitor.zip
-                unzip **/target/*/*/monitor.zip -d .
+                // Unzip Monitor
+                sh '''
+                unzip target/*/*/monitor.zip -d .
                 ls -la monitor
                 '''
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
+                
+                // Deploy App COnatiner wth Cov Image
                 sh '''
-                
-                # Deploy App with Coverage Agent
-                
+                # Stop app conatiner if running
+                docker stop ${app_name} || true    
+
                 # Start Docker Container
                 docker run -d \
-                -p ${parabank_port}:8080 \
+                -p ${app_port}:8080 \
                 -p 8050:8050 \
                 -p 61616:61616 \
                 -p 9001:9001 \
                 --env-file "$PWD/jtest/monitor.env" \
                 -v "$PWD/monitor:/home/docker/jtest/monitor" \
-                --name parabankv1 \
+                --name ${app_name} \
                 parasoft/parabank
+                '''
 
-                # Health Check
+                // Run Health Checks
+                sh '''
                 sleep 15
                 curl -iv --raw http://localhost:8090/parabank
                 curl -iv --raw http://localhost:8050/status
@@ -150,9 +145,9 @@ pipeline {
         stage('Test') {
             when { equals expected: true, actual: false}
             steps {
+
+                // Set Up SOAtest .properties file
                 sh '''
-                # Run SOAtest Tests with Cov
-              
                 # Set Up and write .properties file
                 echo $"
                 license.network.auth.enabled=true
@@ -171,10 +166,13 @@ pipeline {
                 
                 # Debug: Print soatestcli.properties file
                 cat jenkins/soatest/soatestcli.properties
-                
+                '''
+
+                // Run tests
+                sh '''
                 # Run SOAtest Tests
                 docker run --rm -i \
-                -u 0:0 \
+                -u "$UID:$GID" \
                 -e ACCEPT_EULA=true \
                 -v "$PWD:$PWD" \
                 parasoft/soavirt /bin/bash -c " \
