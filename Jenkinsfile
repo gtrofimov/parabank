@@ -39,20 +39,29 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout scm
+                // set UID:GID
+                sh  '''
+                    export UID=$(id -u jenkins)
+                    export GID=$(id -g jenkins)
+                    echo "Runnig as User/Group: $UID:$GID"
+                    '''
                 // build the project                
                 echo "Building ${env.JOB_NAME}..."
                 // Debug
                 sh "ls -la"
+
             }
         }
         stage('Build') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
 
 
                 sh '''
                 
                 # Build with Jtest SA/UT/monitor
+                # get jeknins uid
+
 
                 # Create Folder for monitor
                 mkdir monitor
@@ -79,7 +88,7 @@ pipeline {
 
                 # Run Maven build with Jtest tasks via Docker
                 docker run --rm -i \
-                -u "jenkins:jenkins" \
+                -u 995:991 \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
                 $(docker build -q ./jtest) /bin/bash -c " \
@@ -87,16 +96,16 @@ pipeline {
                 -Dmaven.test.failure.ignore=true \
                 test-compile jtest:agent \
                 test jtest:jtest \
-                -s /home/parasoft/.m2/settings.xml \
-                -Djtest.settings='/home/parasoft/jtestcli.properties' \
+                -s jtest/.m2/settings.xml \
+                -Djtest.settings='jtest/jtestcli.properties' \
                 -Djtest.config='jtest/${saConfig}' \
                 -Djtest.report.coverage.images="${unitCovImage}" \
                 -Dproperty.report.dtp.publish=true; \
                 mvn \
                 -DskipTests=true \
                 package jtest:monitor \
-                -s /home/parasoft/.m2/settings.xml \
-                -Djtest.settings='/home/parasoft/jtestcli.properties'; \
+                -s jtest/.m2/settings.xml \
+                -Djtest.settings='jtest/jtestcli.properties'; \
                 "
 
                 # Unzip monitor.zip
@@ -201,7 +210,7 @@ pipeline {
                 -w "$PWD" \
                 $(docker build -q ./jtest) \
                 jtestcli \
-                -settings /home/parasoft/jtestcli.properties \
+                -settings jtest/jtestcli.properties \
                 -staticcoverage "monitor/static_coverage.xml" \
                 -runtimecoverage "parabank/target/jtest/runtime_coverage" \
                 -config "${codeCovConfig}" \
