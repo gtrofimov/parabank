@@ -162,62 +162,45 @@ pipeline {
                 dtp.project=${project_name}
                 dtp.url=${dtp_url}
                 dtp.user=demo
-                dtp.password=demo-user" >> jenkins/soatest/soatestcli.properties
+                dtp.password=demo-user" >> soatest/soatestcli.properties
                 
                 # Debug: Print soatestcli.properties file
-                cat jenkins/soatest/soatestcli.properties
+                cat soatest/soatestcli.properties
                 '''
 
-                // Run tests
+                // Run SOAtest tests
                 sh '''
-                # Run SOAtest Tests
                 docker run --rm -i \
                 -u "$UID:$GID" \
                 -e ACCEPT_EULA=true \
                 -v "$PWD:$PWD" \
                 parasoft/soavirt /bin/bash -c " \
-                cat $PWD/jenkins/soatest/soatestcli.properties; \
+                cat $PWD/soatest/soatestcli.properties; \
                 soatestcli \
-                -settings $PWD/jenkins/soatest/soatestcli.properties \
+                -settings $PWD/soatest/soatestcli.properties \
                 -machineId; \
                 ls -la $PWD/jenkins/soatest; \
                 cp "$PWD/jenkins/soatest"/* "/root/parasoft/soavirt_workspace/TestAssets/"; \
                 soatestcli \
                 -resource /TestAssets \
                 -config '/root/parasoft/soavirt_workspace/TestAssets/AppCoverage.properties' \
-                -settings $PWD/jenkins/soatest/soatestcli.properties \
+                -settings $PWD/soatest/soatestcli.properties \
                 -environment 127.17.0.1 \
-                -report $PWD/jenkins/soatest/report \
+                -report $PWD/soatest/report \
                 -publish"
-                
-                # Publish Coverage
+                '''
 
-                # Set up .properties (why am i doing this twice?)
-                echo $"
-                parasoft.eula.accepted=true
-                jtest.license.use_network=true
-                jtest.license.network.edition=server_edition
-                license.network.use.specified.server=true
-                license.network.auth.enabled=true
-                license.network.url=${ls_url}
-                license.network.user=${ls_user}
-                license.network.password=${ls_pass}
-                build.id="${buildId}"
-                dtp.url=${dtp_url}
-                dtp.user=demo
-                dtp.password=demo-user
-                dtp.project=${project_name}" >> jtest/jtestcli.properties
-
-                # Run Jtest command to publish test results
+                // Publish Coverage
+                sh '''
                 docker run --rm -i \
-                -u 0:0 \
+                -u "UID:GID" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
-                $(docker build -q ./jtest) \
+                parasoft/jtest \
                 jtestcli \
                 -settings jtest/jtestcli.properties \
                 -staticcoverage "monitor/static_coverage.xml" \
-                -runtimecoverage "parabank/target/jtest/runtime_coverage" \
+                -runtimecoverage "target/jtest/runtime_coverage" \
                 -config "${codeCovConfig}" \
                 -property report.coverage.images="${fucntionalCovImage}" \
                 -property session.tag="FunctionalTest" \
