@@ -6,7 +6,8 @@ pipeline {
     environment {
 
         // App Settings
-        app_name="parabankv1"
+        app_name="parabank"
+        app_version="v1"
         app_port=8090
         project_name="Parabank_Master"
         buildId="${project_name}-${BUILD_ID}"
@@ -105,7 +106,7 @@ pipeline {
                 "
                 '''
 
-                // Unzip Monitor
+                // Unzip Cov Monitor
                 sh '''
                 unzip target/*/*/monitor.zip -d .
                 ls -la monitor
@@ -116,10 +117,10 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
                 
-                // Deploy App COnatiner wth Cov Image
+                // Deploy App Conatiner wth Cov Monitor
                 sh '''
                 # Stop app conatiner if running
-                docker stop ${app_name} || true    
+                docker stop ${app_name}-${app_version} || true    
 
                 # Start Docker Container
                 docker run -d \
@@ -129,14 +130,19 @@ pipeline {
                 -p 9001:9001 \
                 --env-file "$PWD/jtest/monitor.env" \
                 -v "$PWD/monitor:/home/docker/jtest/monitor" \
-                --name ${app_name} \
+                --name ${app_name}-${app_version} \
                 parasoft/parabank
                 '''
 
                 // Run Health Checks
                 sh '''
+                # Wait for Uptime
                 sleep 15
+                
+                # Parabank Status Check
                 curl -iv --raw http://localhost:8090/parabank
+                
+                # Cov Agent Status
                 curl -iv --raw http://localhost:8050/status
 
                 '''
@@ -220,7 +226,7 @@ pipeline {
         }
         stage('Static Analysis Reports'){
             
-            when { equals expected: true, actual: false}
+            when { equals expected: true, actual: true}
             steps {
                 echo '---> Parsing static analysis reports'
                 step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: 'target/jtest/*.xml', settings: ''])      
@@ -244,6 +250,7 @@ pipeline {
             }
         }
         stage('Functional Tests 9x'){
+            when { equals expected: true, actual: false}
             steps {
                 echo '---> Parsing 9.x functional test reports'
                 step([$class: 'XUnitPublisher', 
