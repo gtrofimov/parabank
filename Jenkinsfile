@@ -223,7 +223,7 @@ pipeline {
             when { equals expected: true, actual: false}
             steps {
                 echo '---> Parsing static analysis reports'
-                step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: '**/target/jtest/*.xml', settings: ''])      
+                step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: 'target/jtest/*.xml', settings: ''])      
             }
             
         
@@ -234,7 +234,7 @@ pipeline {
                 step([$class: 'XUnitPublisher', 
                     tools: [
                         [$class: 'ParasoftType', 
-                            pattern: '**/target/jtest/*.xml', 
+                            pattern: 'target/jtest/*.xml', 
                             failIfNotNew: false, 
                             skipNoTestFiles: true, 
                             stopProcessingIfError: false
@@ -249,7 +249,7 @@ pipeline {
                 step([$class: 'XUnitPublisher', 
                     tools: [
                         [$class: 'ParasoftSOAtest9xType', 
-                            pattern: '**/soatest/report/*.xml', 
+                            pattern: 'soatest/report/*.xml', 
                             failIfNotNew: false, 
                             skipNoTestFiles: true, 
                             stopProcessingIfError: false
