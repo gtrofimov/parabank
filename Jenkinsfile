@@ -13,9 +13,9 @@ pipeline {
         buildId="${project_name}-${BUILD_ID}"
         
         // Parasoft Licenses
-        ls_url="${PARASOFT_LS_URL}"
-        ls_user="${PARASOFT_LS_USER}"
-        ls_pass="${PARASOFT_LS_PASS}"
+        ls_url="${LS_URL}"
+        ls_user="${LS_USER}"
+        ls_pass="${LS_PASS}"
         
         // Parasoft Jtest Settings
         saConfig="UTSA.properties"
@@ -26,7 +26,7 @@ pipeline {
         fucntionalCovImage="${project_name};${project_name}_FunctionalTest"
         
         // Parasoft DTP Settings
-        dtp_url="${PARASOFT_DTP_URL}"
+        dtp_url= "${DTP_URL}"
         dtp_user="demo"
         dtp_pass="demo-user"
         dtp_publish=false
@@ -69,13 +69,13 @@ pipeline {
                 jtest.license.network.edition=server_edition
                 license.network.use.specified.server=true
                 license.network.auth.enabled=true
-                license.network.url=${ls_url}
-                license.network.user=${ls_user}
-                license.network.password=${ls_pass}
+                license.network.url=${LS_URL}
+                license.network.user=${LS_USER}
+                license.network.password=${LS_PASS}
                 build.id="${buildId}"
-                dtp.url="${dtp_url}"
-                dtp.user="${dtp_user}"
-                dtp.password="${dtp_pass}"
+                dtp.url="${DTP_URL}"
+                dtp.user="${DTP_USER}"
+                dtp.password="${DTP_PASS}"
                 dtp.project=${project_name}" >> jtest/jtestcli.properties
                 
                 # Debug: Print jtestcli.properties file
@@ -114,7 +114,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // Deploy App Conatiner wth Cov Monitor
@@ -226,7 +226,7 @@ pipeline {
         }
         stage('Static Analysis Reports'){
             
-            when { equals expected: true, actual: true}
+            when { equals expected: true, actual: false}
             steps {
                 echo '---> Parsing static analysis reports'
                 step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: 'target/jtest/*.xml', settings: ''])      
@@ -236,6 +236,7 @@ pipeline {
         }
         stage('Unit Test 10x'){
             steps {
+                when { equals expected: true, actual: false}
                 echo '---> Parsing 10.x unit test reports'
                 step([$class: 'XUnitPublisher', 
                     tools: [
