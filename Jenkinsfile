@@ -88,7 +88,7 @@ pipeline {
                 -u "$UID:$GID" \
                 -v "$PWD:$PWD" \
                 -w "$PWD" \
-                $(docker build -q ./jtest) /bin/bash -c " \
+                $(docker build -q --no-cache ./jtest) /bin/bash -c " \
                 mvn \
                 -Dmaven.test.failure.ignore=true \
                 test-compile jtest:agent \
