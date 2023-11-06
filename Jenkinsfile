@@ -4,36 +4,34 @@ pipeline {
         skipDefaultCheckout(true)
     }
     environment {
-
         // App Settings
-        app_name="parabank"
-        app_version="v1"
-        app_port=8090
-        project_name="Parabank_Master"
-        buildId="${project_name}-${BUILD_ID}"
-        
+        app_name = 'parabank'
+        app_version = 'v1'
+        app_port = 8090
+        project_name = 'Parabank_Master'
+        buildId = "${project_name}-${BUILD_ID}"
+
         // Parasoft Licenses
-        ls_url="${LS_URL}"
-        ls_user="${LS_USER}"
-        ls_pass="${LS_PASS}"
-        
+        ls_url = "${LS_URL}"
+        ls_user = "${LS_USER}"
+        ls_pass = "${LS_PASS}"
+
         // Parasoft Jtest Settings
-        saConfig="UTSA.properties"
-        codeCovConfig="CalculateApplicationCoverage.properties"    
-        unitCovImage="${project_name};${project_name}_UnitTest"
+        saConfig = 'UTSA.properties'
+        codeCovConfig = 'CalculateApplicationCoverage.properties'
+        unitCovImage = "${project_name};${project_name}_UnitTest"
 
         // Parasoft SOAtest Settings
-        fucntionalCovImage="${project_name};${project_name}_FunctionalTest"
-        
+        fucntionalCovImage = "${project_name};${project_name}_FunctionalTest"
+
         // Parasoft DTP Settings
-        dtp_url= "${DTP_URL}"
-        dtp_user="demo"
-        dtp_pass="demo-user"
-        dtp_publish=false
+        dtp_url = "${DTP_URL}"
+        dtp_user = 'demo'
+        dtp_pass = 'demo-user'
+        dtp_publish = false
 
-        // Build Triggers
-
-        }
+    // Build Triggers
+    }
     stages {
         stage('Configre Job') {
             steps {
@@ -45,23 +43,22 @@ pipeline {
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
-                // build the project                
+                // build the project
                 echo "Building ${env.JOB_NAME}..."
                 // Debug
-                sh "ls -la"
-
+                sh 'ls -la'
             }
         }
         stage('Build') {
             when { equals expected: true, actual: true }
             steps {
                 // Build with Jtest SA/UT/monitor
-                
+
                 // Set Up .propeties file
                 sh '''
                 # Create Folder for monitor
                 mkdir monitor
-                
+
                 # Set Up and write .properties file
                 echo $"
                 parasoft.eula.accepted=true
@@ -77,7 +74,7 @@ pipeline {
                 dtp.user="${DTP_USER}"
                 dtp.password="${DTP_PASS}"
                 dtp.project=${project_name}" >> jtest/jtestcli.properties
-                
+
                 # Debug: Print jtestcli.properties file
                 cat jtest/jtestcli.properties
                 '''
@@ -116,11 +113,10 @@ pipeline {
         stage('Deploy') {
             when { equals expected: true, actual: false }
             steps {
-                
                 // Deploy App Conatiner wth Cov Monitor
                 sh '''
                 # Stop app conatiner if running
-                docker stop ${app_name}-${app_version} || true    
+                docker stop ${app_name}-${app_version} || true
 
                 # Start Docker Container
                 docker run -d \
@@ -138,10 +134,10 @@ pipeline {
                 sh '''
                 # Wait for Uptime
                 sleep 15
-                
+
                 # Parabank Status Check
                 curl -iv --raw http://localhost:8090/parabank
-                
+
                 # Cov Agent Status
                 curl -iv --raw http://localhost:8050/status
 
@@ -149,9 +145,8 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: false}
+            when { equals expected: true, actual: false }
             steps {
-
                 // Set Up SOAtest .properties file
                 sh '''
                 # Set Up and write .properties file
@@ -169,7 +164,7 @@ pipeline {
                 dtp.url=${dtp_url}
                 dtp.user=demo
                 dtp.password=demo-user" >> soatest/soatestcli.properties
-                
+
                 # Debug: Print soatestcli.properties file
                 cat soatest/soatestcli.properties
                 '''
@@ -216,7 +211,7 @@ pipeline {
             }
         }
         stage('Release') {
-            when { equals expected: true, actual: false}
+            when { equals expected: true, actual: false }
             steps {
                 sh '''
                 docker stop parabankv1
@@ -224,42 +219,40 @@ pipeline {
                 '''
             }
         }
-        stage('Static Analysis Reports'){
-            
-            when { equals expected: true, actual: false}
+        stage('Static Analysis Reports') {
+            when { equals expected: true, actual: false }
             steps {
                 echo '---> Parsing static analysis reports'
-                step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: 'target/jtest/*.xml', settings: ''])      
+                step([$class: 'ParasoftPublisher', useReportPattern: true, reportPattern: 'target/jtest/*.xml', settings: ''])
             }
-            
-        
+
         }
-        stage('Unit Test 10x'){
+        stage('Unit Test 10x') {
+            when { equals expected: true, actual: false }
             steps {
-                when { equals expected: true, actual: false}
                 echo '---> Parsing 10.x unit test reports'
-                step([$class: 'XUnitPublisher', 
+                step([$class: 'XUnitPublisher',
                     tools: [
-                        [$class: 'ParasoftType', 
-                            pattern: 'target/jtest/*.xml', 
-                            failIfNotNew: false, 
-                            skipNoTestFiles: true, 
+                        [$class: 'ParasoftType',
+                            pattern: 'target/jtest/*.xml',
+                            failIfNotNew: false,
+                            skipNoTestFiles: true,
                             stopProcessingIfError: false
                         ]
                     ]
                 ])
             }
         }
-        stage('Functional Tests 9x'){
-            when { equals expected: true, actual: false}
+        stage('Functional Tests 9x') {
+            when { equals expected: true, actual: false }
             steps {
                 echo '---> Parsing 9.x functional test reports'
-                step([$class: 'XUnitPublisher', 
+                step([$class: 'XUnitPublisher',
                     tools: [
-                        [$class: 'ParasoftSOAtest9xType', 
-                            pattern: 'soatest/report/*.xml', 
-                            failIfNotNew: false, 
-                            skipNoTestFiles: true, 
+                        [$class: 'ParasoftSOAtest9xType',
+                            pattern: 'soatest/report/*.xml',
+                            failIfNotNew: false,
+                            skipNoTestFiles: true,
                             stopProcessingIfError: false
                         ]
                     ]
@@ -267,5 +260,4 @@ pipeline {
             }
         }
     }
-
 }
