@@ -35,7 +35,7 @@
     <jax-jws.version>3.0.0</jax-jws.version>
     <jax-rs.version>4.0.0</jax-rs.version>
     <jax-soap.version>3.0.2</jax-soap.version>
-    <jax-ws.version>4.0.2</jax-ws.version>
+    <jax-ws.version>4.0.3</jax-ws.version>
     <jaxb.version>4.0.5</jaxb.version>
     <jaxb.impl.version>4.0.6</jaxb.impl.version>
     <istack.version>4.2.0</istack.version>
