@@ -72,6 +72,7 @@
     <bcprov.version>1.84</bcprov.version>
     <jquery.version>4.0.0</jquery.version>
     <guava.version>33.6.0-jre</guava.version>
+    <neethi.version>3.2.2</neethi.version>
     <snakeyaml.version>2.6</snakeyaml.version>
     <selenium.version>4.43.0</selenium.version>
     <angus-activation.version>2.0.3</angus-activation.version>
@@ -118,6 +119,11 @@
         <version>${cxf.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.neethi</groupId>
+        <artifactId>neethi</artifactId>
+        <version>${neethi.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.wss4j</groupId>
