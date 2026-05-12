@@ -210,6 +210,8 @@
 	<bean id="hsqldb" class="com.parasoft.parabank.util.ServerBean"
 		lazy-init="false">
 		<property name="dataSource" ref="dataSource" />
+		<property name="databasePath" value="target/hsqldb-test/db" />
+		<property name="databasePath2" value="target/hsqldb-test/db2" />
 		<property name="serverProperties">
 			<props>
 				<prop key="server.database.0">file:parabank</prop>
