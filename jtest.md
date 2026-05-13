@@ -6,6 +6,10 @@ mvn clean test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.te
 ```
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests"
 ```
+# Run TIA
+```
+mvn tia:affected-tests test -Djtest.referenceCoverageFile=target/jtest/baseline/coverage.xml -Djtest.referenceReportFile=target/jtest/baseline/report.xml -Djtest.runFailedTests=false -Djtest.runModifiedTests=true
+```
 
 # Run SA
 ```
