@@ -37,23 +37,55 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Create Unit Tests
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Create Unit Tests" -include include.lst
 ```
 
-4. Review generated files under `src/test/java/`.
-5. Run generated tests using `jtest-run-ut`.
+4. Identify generated test files under `src/test/java/` (use `git status` or `find` filtered by modification time).
+
+5. **Scoped rebuild** — update `jtest.data.json` to include the new test classes without running the full suite (see jtest-build Scoped Rebuild Rule):
+
+```bash
+mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true -Dtest=<GeneratedTestClass>
+```
+
+   Use a comma-separated list for multiple generated classes: `-Dtest=FooTest,BarTest`.
+
+6. **Run the generated tests** scoped to the generated class(es):
+
+```bash
+jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "path:**/GeneratedTestClass.java"
+```
+
+7. **Fix failing or incomplete tests using Copilot**:
+   - Read the generated test file(s) and the surefire report for the failing class (under `target/surefire-reports/<ClassName>.txt`).
+   - For each failing or errored test method, read the failure message and stack trace.
+   - Diagnose the root cause: wrong assertion value, missing setup, incorrect mock, or invalid input.
+   - Apply targeted fixes directly to the generated test file — do not regenerate.
+   - Common fixes:
+     - Adjust hardcoded assertion values to match actual return values.
+     - Add `@Before` setup or field initialization that the generated stub omitted.
+     - Replace invalid default inputs (e.g., `null`, `0`) with values that satisfy preconditions.
+     - Add `@Test(expected = SomeException.class)` for tests that are expected to throw.
+   - After each round of fixes, re-run step 6 to confirm tests pass.
+   - Repeat until all generated tests pass or are explicitly marked `@Ignore` with a comment explaining why.
+
+8. Report final pass/fail counts and coverage delta.
 
 ## Reporting
 
 Provide:
 - files in scope
 - test files generated
-- generation errors
 - list of generated test file paths
+- test results after fix cycle: passed / failed / ignored
+- coverage for the targeted class(es) before and after
 
 ## Completion Checks
 - `jtestcli` completed with `builtin://Create Unit Tests`.
 - requested scope is reflected in `-include`/`-exclude`.
 - generated tests are present in `src/test/java/`.
+- generated tests were executed and all pass (or failures are `@Ignore`d with explanation).
+- no fix loop ran more than 3 iterations; escalate to user if still failing after 3 attempts.
 
 ## Decision Rules
 - If scope is ambiguous, ask one clarifier: class, package, or all.
 - If user gives a class name, prefer `path:**/ClassName.java`.
 - For stale data refresh in generation-only workflows, default to `jtest-build` mode `sa`.
+- Always use the Scoped Rebuild Rule (step 5) after generation — never run the full test suite just to update `jtest.data.json`.
