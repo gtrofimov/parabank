@@ -24,6 +24,17 @@ Treat `target/jtest/jtest.data.json` as stale when any of these is true:
 - `pom.xml` changed
 - any `src/main/java/**` file is newer than the data file
 - for `ut` and `both`, any `src/test/java/**` file is newer than the data file
+- for `ut` and `both`, any compiled test class in `target/test-classes/` has no corresponding source file in `src/test/java/` (deleted source, orphaned bytecode)
+
+To detect orphaned test classes before rebuilding:
+
+```bash
+comm -23 \
+  <(find target/test-classes -name "*.class" | sed 's|target/test-classes/||;s|\.class$||;s|\$.*||' | sort -u) \
+  <(find src/test/java -name "*.java"        | sed 's|src/test/java/||;s|\.java$||'               | sort -u)
+```
+
+If any orphans are found, run `mvn clean` before the rebuild command to purge stale bytecode. Orphaned classes cause ghost tests to appear in jtest.data.json and coverage artifacts.
 
 ## Scoped Rebuild Rule
 
