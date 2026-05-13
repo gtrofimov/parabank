@@ -21,7 +21,8 @@ Generate unit tests for source classes from the repository root.
 
 1. Ensure current working directory is the repository root.
 2. Ensure `target/jtest/jtest.data.json` is present and current.
-   - If missing or stale, run `jtest-build` with mode `sa` or `both`.
+   - If missing or stale, run `jtest-build` with mode `sa`.
+   - Use mode `both` only when the same request explicitly includes immediate UT execution after generation.
 3. Run test creation:
 
 ```bash
@@ -55,3 +56,4 @@ Provide:
 ## Decision Rules
 - If scope is ambiguous, ask one clarifier: class, package, or all.
 - If user gives a class name, prefer `path:**/ClassName.java`.
+- For stale data refresh in generation-only workflows, default to `jtest-build` mode `sa`.

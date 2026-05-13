@@ -16,7 +16,8 @@ Run static analysis from the repository root.
 
 1. Ensure current working directory is the repository root.
 2. Ensure `target/jtest/jtest.data.json` is present and current for SA.
-   - If missing or stale, run `jtest-build` with mode `sa` or `both` first.
+   - If missing or stale, run `jtest-build` with mode `sa` first.
+   - Use mode `both` only when the same request also includes UT preparation.
 3. Run static analysis. Default config:
 
 ```bash
@@ -40,7 +41,9 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Recommended Rules
 ```
 
 4. Retrieve violations using `mcp_jtest_get_violations_from_report_file` (sequential calls only).
-5. Retrieve rule details for important findings using `mcp_jtest_get_rule_documentation` (sequential calls only).
+5. Retrieve rule details for prioritized findings using `mcp_jtest_get_rule_documentation` (sequential calls only):
+   - include all CRITICAL and HIGH severity findings
+   - if no CRITICAL/HIGH findings exist, include the top 5 findings by rule frequency
 
 ## Reporting
 
@@ -54,9 +57,10 @@ Provide:
 ## Completion Checks
 - `jtestcli` completed without errors.
 - requested scope/config is reflected in the final command.
-- violations were obtained via Jtest tooling, not manual XML parsing.
+- violations were obtained via approved Jtest tooling (MCP or allowed shell/custom parser path), and parser path was reported.
 
 ## Decision Rules
 - Default config: `builtin://Recommended Rules`.
 - For security asks: prefer `builtin://CWE Top 25 + On the Cusp 2025` or `builtin://OWASP Top 10-2025`.
 - If scope is ambiguous, ask one clarifier: class, package, or path pattern.
+- Important findings threshold: all CRITICAL/HIGH findings, otherwise top 5 by rule frequency.

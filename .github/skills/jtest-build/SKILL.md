@@ -14,8 +14,8 @@ Prepare Jtest build artifacts, especially `target/jtest/jtest.data.json`, and ke
 
 ## Modes
 - `sa`: prepare data for static analysis flow.
-- `ut`: prepare data for unit-test flow.
-- `both`: prepare for both SA and UT (default).
+- `ut`: prepare data for unit-test flow; this mode runs the Maven UT lifecycle.
+- `both`: prepare for both SA and UT (default); includes the Maven UT lifecycle.
 
 ## Freshness Rules
 
@@ -73,3 +73,5 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 - If mode is omitted, use `both`.
 - If request is SA-only, use `sa`.
 - If request is UT-only or coverage-focused, use `ut`.
+- If request is test-creation-only, use `sa`.
+- If request combines test creation and immediate UT execution, use `both`.

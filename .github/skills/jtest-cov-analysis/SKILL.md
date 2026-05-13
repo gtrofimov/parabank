@@ -20,25 +20,26 @@ Analyze coverage from Jtest output.
 ## Missing/Stale Coverage Behavior
 
 If all supported coverage sources are missing or stale for requested scope:
-1. run `jtest-run-ut` first to refresh test and coverage artifacts
+1. run `jtest-run-ut` for all tests first to refresh test and coverage artifacts
 2. continue coverage analysis after UT completes
 
 ## Procedure
 
 1. Ensure current working directory is repository root.
 2. Resolve coverage XML path in this order: baseline, fallback, legacy fallback.
-   - If none exists or all are stale, execute `jtest-run-ut` automatically and use the refreshed artifact.
+   - If none exists or all are stale, execute `jtest-run-ut` for all tests automatically and use the refreshed artifact.
+   - Store the selected path in `COVERAGE_XML` and use that value for all parser commands.
 3. Run the coverage parser script to generate structured CSV data for analysis.
 
 ```bash
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml target/jtest/baseline/coverage.xml --top 0 --method-top 0 --output csv
+bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --top 0 --method-top 0 --output csv
 ```
 
    Scope examples:
 
 ```bash
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml report/coverage.xml --include "src/main/java/com/parasoft/parabank/web/controller/" --top 0 --method-top 0 --output csv
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml target/jtest/baseline/coverage.xml --output csv --top 0 > target/jtest/coverage-gaps.csv
+bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --include "src/main/java/com/parasoft/parabank/web/controller/" --top 0 --method-top 0 --output csv
+bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --output csv --top 0 > target/jtest/coverage-gaps.csv
 ```
 
 4. Skill-side analysis and formatting (mandatory):
@@ -80,6 +81,7 @@ Provide:
 ## Decision Rules
 - If user asks for coverage without asking to run tests and coverage is already current, analyze only.
 - If user asks for coverage and coverage is missing/stale, run UT automatically then analyze.
+- If user asks for UT and coverage together, run `jtest-run-ut` first, then analyze coverage from the refreshed artifact.
 - If scope is ambiguous, ask one clarifier: class, package, path, or all.
 - Always prefer `coverage-gap-analysis.sh` for coverage ranking and top-gap identification.
 - If user asks for precise uncovered line numbers, use MCP line coverage sequentially for the selected scope.
