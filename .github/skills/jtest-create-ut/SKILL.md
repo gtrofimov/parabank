@@ -20,13 +20,9 @@ Generate unit tests for source classes from the repository root.
 ## Procedure
 
 1. Ensure current working directory is the repository root.
-2. Pre-heat MCP once per session before test creation.
-   - Jtest MCP warm-up: run one minimal Jtest MCP action.
-   - DTP MCP warm-up: run one DTP info call, then one DTP build/metadata call.
-   - Keep calls sequential.
-3. Ensure `target/jtest/jtest.data.json` is present and current.
+2. Ensure `target/jtest/jtest.data.json` is present and current.
    - If missing or stale, run `jtest-build` with mode `sa` or `both`.
-4. Run test creation:
+3. Run test creation:
 
 ```bash
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Create Unit Tests"
@@ -40,8 +36,8 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Create Unit Tests
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Create Unit Tests" -include include.lst
 ```
 
-5. Review generated files under `src/test/java/`.
-6. Run generated tests using `jtest-run-ut`.
+4. Review generated files under `src/test/java/`.
+5. Run generated tests using `jtest-run-ut`.
 
 ## Reporting
 

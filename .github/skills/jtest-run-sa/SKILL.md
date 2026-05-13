@@ -15,13 +15,9 @@ Run static analysis from the repository root.
 ## Procedure
 
 1. Ensure current working directory is the repository root.
-2. Pre-heat MCP once per session before SA.
-   - Jtest MCP warm-up: run one minimal Jtest MCP action.
-   - DTP MCP warm-up: run one DTP info call, then one DTP build/metadata call.
-   - Keep calls sequential.
-3. Ensure `target/jtest/jtest.data.json` is present and current for SA.
+2. Ensure `target/jtest/jtest.data.json` is present and current for SA.
    - If missing or stale, run `jtest-build` with mode `sa` or `both` first.
-4. Run static analysis. Default config:
+3. Run static analysis. Default config:
 
 ```bash
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Recommended Rules"
@@ -43,8 +39,8 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Recommended Rules
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Recommended Rules" -resource "**/src/main/java/com/parasoft/parabank/web/**"
 ```
 
-5. Retrieve violations using `mcp_jtest_get_violations_from_report_file` (sequential calls only).
-6. Retrieve rule details for important findings using `mcp_jtest_get_rule_documentation` (sequential calls only).
+4. Retrieve violations using `mcp_jtest_get_violations_from_report_file` (sequential calls only).
+5. Retrieve rule details for important findings using `mcp_jtest_get_rule_documentation` (sequential calls only).
 
 ## Reporting
 

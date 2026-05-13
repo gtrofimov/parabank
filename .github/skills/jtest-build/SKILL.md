@@ -28,14 +28,10 @@ Treat `target/jtest/jtest.data.json` as stale when any of these is true:
 ## Procedure
 
 1. Ensure current working directory is repository root.
-2. Pre-heat MCP once per session before build actions.
-	- Jtest MCP warm-up: run one minimal Jtest MCP action.
-	- DTP MCP warm-up: run one DTP info call, then one DTP build/metadata call.
-	- Execute all MCP calls sequentially.
-3. Determine mode (`both` by default).
-4. If data file is fresh for the selected mode, reuse it.
-5. If stale or missing, regenerate based on mode.
-6. If mode is `both` (complete-run build phase), copy the generated data file to a reusable baseline snapshot:
+2. Determine mode (`both` by default).
+3. If data file is fresh for the selected mode, reuse it.
+4. If stale or missing, regenerate based on mode.
+5. If mode is `both` (complete-run build phase), copy the generated data file to a reusable baseline snapshot:
 
 ```bash
 mkdir -p target/jtest/baseline

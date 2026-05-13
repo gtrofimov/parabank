@@ -15,13 +15,9 @@ Run unit tests from the repository root.
 ## Procedure
 
 1. Ensure current working directory is the repository root.
-2. Pre-heat MCP once per session before UT.
-   - Jtest MCP warm-up: run one minimal Jtest MCP action.
-   - DTP MCP warm-up: run one DTP info call, then one DTP build/metadata call.
-   - Keep calls sequential.
-3. Ensure `target/jtest/jtest.data.json` is present and current for UT.
+2. Ensure `target/jtest/jtest.data.json` is present and current for UT.
    - If missing or stale, run `jtest-build` with mode `ut` or `both` first.
-4. Run unit tests. All tests:
+3. Run unit tests. All tests:
 
 ```bash
 mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true
@@ -34,7 +30,7 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true -Dtest=JdbcCustomerDaoTest#testGetCustomer
 ```
 
-5. Run UT analysis:
+4. Run UT analysis:
 
 ```bash
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests"
@@ -48,7 +44,7 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -incl
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "com/parasoft/parabank/**" -exclude "**/integration/**"
 ```
 
-6. For complete-run UT phase (all tests), refresh reusable baseline artifacts:
+5. For complete-run UT phase (all tests), refresh reusable baseline artifacts:
 
 ```bash
 mkdir -p target/jtest/baseline
@@ -58,7 +54,7 @@ cp report/coverage.xml target/jtest/baseline/coverage.xml
 
    If either source file is not produced by the run, report it and continue.
 
-7. If coverage analysis is requested, hand off to `jtest-cov-analysis`.
+6. If coverage analysis is requested, hand off to `jtest-cov-analysis`.
 
 ## Reporting
 
