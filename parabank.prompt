@@ -1,0 +1,163 @@
+# Feature: Loan Request History
+
+Goal-oriented loop. Phases run in order. Each phase has a required artifact and an
+exit condition. Do not advance until the exit condition is met.
+
+---
+
+## 0. Goal
+
+As a customer I want to see the history of my loan requests.
+
+### Decisions (locked)
+
+| # | Decision |
+|---|----------|
+| 1 | **Persist loan requests in DB: YES.** Derivation from `Transaction` is not sufficient — see Finding 1. |
+| 2 | History scope: **per customer**. |
+| 3 | Surface: **REST only.** No SOAP. No UI work in this iteration. |
+| 4 | Jira project key: `PGT`. DTP filter id: **TODO — required before Observe.** |
+| 5 | Thresholds: new-class line coverage >= 80%; zero new Sev1 SA violations vs `master` under `builtin://CWE Top 25 + On the Cusp 2025`. |
+| 6 | Runtime: build locally, deploy ParaBank locally (WSL). SOAVirt reachable via MCP. |
+
+### Finding 1 — why persistence is required
+
+`BankManagerImpl.requestLoan` persists nothing about the request itself.
+On approval it creates a `LOAN`-type `Account` and one withdrawal `Transaction`
+described `"Down Payment for Loan # <accountId>"`. Therefore:
+
+- Denied requests leave **no trace at all** — not derivable.
+- Approved requests are only partially derivable: the loan account `balance`
+  drifts as the loan is repaid, so the original `loanAmount` is unrecoverable.
+- `availableFunds` and `requestDate` are not persisted.
+
+Rule from Decision 1 ("no if derivable, yes if not") therefore resolves to **yes**.
+
+### Non-goals
+
+- No UI / JSP / E2E work. Recorded as future scope only.
+- No SOAP contract change.
+- No fixing pre-existing bugs.
+- No closing pre-existing coverage gaps.
+- No reuse or modification of existing SOAtest or Virtualize assets.
+
+---
+
+## 1. Branch
+
+Work on a dedicated branch off `master`. No force push. No push without approval.
+
+---
+
+## 2. Baseline snapshot
+
+Required before any source edit, so "new violations" and "new coverage" are
+measurable as a delta.
+
+1. `jtest-build` mode `both`
+2. `jtest-run-ut` all tests
+3. Copy `report/report.xml` and `report/coverage.xml` into `target/jtest/baseline/`
+
+Baseline paths are already declared in `jtest-skills.config`.
+
+**Exit:** both baseline files exist.
+
+---
+
+## 3. Observe
+
+Read-only. No edits in this phase.
+
+1. Jira MCP — open items under project `PGT` related to loans
+2. DTP MCP — existing violations and coverage for the loan code paths
+3. `gh pr list` — in-flight work touching the same files
+4. Source: `LoanRequest`, `RequestLoanController`, `BankManagerImpl.requestLoan`,
+   `create.sql`, `src/main/webapp/WEB-INF/swagger.yaml`
+
+**Artifact:** written current-state summary.
+**Exit:** summary produced, zero files modified.
+
+---
+
+## 4. Plan
+
+Produce a task list. One task = one artifact.
+
+- schema: `LoanRequest` table in `create.sql`
+- DAO: `JdbcLoanRequestDao` + row mapper + Spring wiring
+- service: persist on request, read history per customer
+- REST: history endpoint
+- API docs: update `src/main/webapp/WEB-INF/swagger.yaml`
+- unit tests: per new class
+- API scenarios: generated fresh via SOAtest MCP
+- health checks: generated fresh via SOAtest MCP
+- (deferred, no work) UI / E2E flows — record scope only
+
+**Exit:** human approves the task list.
+
+---
+
+## 5. Execute
+
+Per task, in this order. Never batch tasks.
+
+1. Write code.
+2. **Static analysis first** — `jtest-run-sa` on changed files, plus the security
+   configuration. Fix violations now.
+3. Only once the code is stable and no further modification is expected,
+   generate unit tests (`jtest-create-ut`).
+4. `jtest-run-ut` on that class only.
+5. Commit.
+
+SA precedes test generation so tests are not written against code that is about
+to change.
+
+---
+
+## 6. API assets
+
+- Update `src/main/webapp/WEB-INF/swagger.yaml` to describe the new endpoint.
+- Generate API test scenarios with SOAtest MCP. Do **not** reuse the existing
+  `.tst` assets under `soatest/TestAssets/`.
+- Generate health checks with SOAtest MCP. Run them first to distinguish an
+  unstable environment from a code defect.
+- Create Virtualize assets only **if** a dependency is genuinely unavailable.
+  Do not modify existing assets under `soatest/VirtualAssets/`.
+
+---
+
+## 7. Verify
+
+**Read-only. This phase runs no tests and no builds.** It reads artifacts
+produced earlier.
+
+1. Read `report/report.xml` and `report/coverage.xml`
+2. Read SOAtest run output
+3. Compare against `target/jtest/baseline/` for the SA and coverage delta
+4. Compare against the Decision 5 thresholds
+
+**Exit:** thresholds met. Otherwise return to Execute.
+Maximum 3 loop iterations, then stop and ask the human.
+
+---
+
+## 8. Rules
+
+- Branch off `master`, no force push, no push or PR without approval.
+- MCP calls strictly sequential — call, wait, evaluate, next. Never parallel.
+- Environment is WSL. Do **not** run the scripts in `dev-scripts/`; the `.bat`
+  files are Windows-only and the shell variants are not applicable here. They may
+  be read to learn the intended command shape, then replaced with a direct
+  invocation.
+- Do not reuse, modify, or depend on existing SOAtest `.tst` or Virtualize assets.
+  Generate new assets via SOAtest MCP. Create Virtualize assets only if required.
+- Static analysis runs before unit-test generation.
+- Verify phase reads reports only; it never executes tests.
+- No unrelated refactors, no old-bug fixes, no old-coverage-gap filling.
+- Do not commit `reports/`, `target/`, or `.vscode/`.
+
+---
+
+## 9. Resources
+
+Jtest MCP · SOAtest MCP · Virtualize MCP · DTP MCP · Jira MCP · `gh`
