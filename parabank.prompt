@@ -88,7 +88,7 @@ matches `master`.
 
 Read-only. No edits in this phase.
 
-1. Jira MCP — open items under project `PGT` related to loans
+1. Atlassian CLI — `acli jira` search for open items under project `PGT` related to loans
 2. DTP MCP — existing violations and coverage for the loan code paths
 3. `gh pr list` — in-flight work touching the same files
 4. Source: `LoanRequest`, `RequestLoanController`, `BankManagerImpl.requestLoan`,
@@ -165,6 +165,7 @@ Maximum 3 loop iterations, then stop and ask the human.
 
 - Branch off `master`, no force push, no push or PR without approval.
 - MCP calls strictly sequential — call, wait, evaluate, next. Never parallel.
+- Use authenticated `acli jira` for Jira discovery. Do not use Jira MCP.
 - Environment is WSL. Do **not** run the scripts in `dev-scripts/`; the `.bat`
   files are Windows-only and the shell variants are not applicable here. They may
   be read to learn the intended command shape, then replaced with a direct
@@ -180,4 +181,4 @@ Maximum 3 loop iterations, then stop and ask the human.
 
 ## 9. Resources
 
-Jtest MCP · SOAtest MCP · Virtualize MCP · DTP MCP · Jira MCP · `gh`
+Jtest MCP · SOAtest MCP · Virtualize MCP · DTP MCP · Atlassian CLI (`acli jira`) · `gh`
