@@ -152,6 +152,7 @@
 
 		<jaxrs:serviceBeans>
 			<ref bean="paraBankService" />
+			<ref bean="loanRequestHistoryResource" />
 		</jaxrs:serviceBeans>
 
 		<jaxrs:providers>
@@ -192,6 +193,10 @@
 
 	<bean id="paraBankService" class="com.parasoft.parabank.service.ParaBankServiceImpl">
 		<property name="adminManager" ref="adminManager" />
+		<property name="bankManager" ref="bankManager" />
+	</bean>
+
+	<bean id="loanRequestHistoryResource" class="com.parasoft.parabank.service.LoanRequestHistoryResource">
 		<property name="bankManager" ref="bankManager" />
 	</bean>
 
