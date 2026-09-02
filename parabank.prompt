@@ -16,7 +16,7 @@ As a customer I want to see the history of my loan requests.
 | 1 | **Persist loan requests in DB: YES.** Derivation from `Transaction` is not sufficient — see Finding 1. |
 | 2 | History scope: **per customer**. |
 | 3 | Surface: **REST only.** No SOAP. No UI work in this iteration. |
-| 4 | Jira project key: `PGT`. DTP filter id: **TODO — required before Observe.** |
+| 4 | Jira project key: `PGT`. DTP filter id: `33`. |
 | 5 | Thresholds: new-class line coverage >= 80%; zero new Sev1 SA violations vs `master` under `builtin://CWE Top 25 + On the Cusp 2025`. |
 | 6 | Runtime: build locally, deploy ParaBank locally (WSL). SOAVirt reachable via MCP. |
 
