@@ -36,6 +36,10 @@ public class JdbcAdminDao extends JdbcDaoSupport implements AdminDao {
 
     private static final Resource RESET_RESOURCE = new ClassPathResource(SQL_PACKAGE + "reset.sql");
 
+    private static final String LOAN_REQUEST_SEQUENCE = "LoanRequest";
+
+    private static final int LOAN_REQUEST_INITIAL_ID = 15587;
+
     private List<DynamicDataInserter> inserters;
 
     /*
@@ -141,6 +145,12 @@ public class JdbcAdminDao extends JdbcDaoSupport implements AdminDao {
         try {
             con = getConnection();
             ScriptUtils.executeSqlScript(con, MIGRATE_LOAN_REQUEST_RESOURCE);
+            final Integer loanRequestSequenceCount = getJdbcTemplate().queryForObject(
+                "SELECT COUNT(*) FROM Sequence WHERE name = ?", Integer.class, LOAN_REQUEST_SEQUENCE);
+            if (Integer.valueOf(0).equals(loanRequestSequenceCount)) {
+                getJdbcTemplate().update("INSERT INTO Sequence (name, next_id) VALUES (?, ?)", LOAN_REQUEST_SEQUENCE,
+                    Integer.valueOf(LOAN_REQUEST_INITIAL_ID));
+            }
         } finally {
             if (con != null) {
                 releaseConnection(con);

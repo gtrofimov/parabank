@@ -15,7 +15,3 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
   FOREIGN KEY (customer_id) REFERENCES Customer(id),
   FOREIGN KEY (loan_account_id) REFERENCES Account(id)
 );
-
-INSERT INTO Sequence (name, next_id)
-SELECT 'LoanRequest', 15587
-WHERE NOT EXISTS (SELECT 1 FROM Sequence WHERE name = 'LoanRequest');
