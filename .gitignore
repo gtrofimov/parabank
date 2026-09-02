@@ -34,6 +34,7 @@ jtest-ft-cov/
 **/.idea/**/workspace.xml
 **/.idea/**/runConfigurations/
 .vscode
+*.env
 
 # Gradle:
 **/.idea/**/gradle.xml
