@@ -1,3 +1,4 @@
+# Debugging
 *.bak
 /target/
 hs_err_*.log
@@ -17,6 +18,8 @@ jtest-ft-cov/
 /soatest/report-parabank/
 /soatest/TestAssets/test_templates/
 /soatest/stubs/
+/reports
+**/*.settings
 
 # Phabricator Arcanist
 /.arcconfig
@@ -28,6 +31,7 @@ jtest-ft-cov/
 # User-specific stuff:
 **/.idea/**/workspace.xml
 **/.idea/**/runConfigurations/
+.vscode
 
 # Gradle:
 **/.idea/**/gradle.xml
