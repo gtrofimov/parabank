@@ -6,6 +6,7 @@
 -- avoid the need to order the DROP TABLE statements, but in the current MySQL
 -- (5.x) the CASCADE keyword does nothing for a DROP TABLE statement.
 
+DROP TABLE IF EXISTS LoanRequest;
 DROP TABLE IF EXISTS Stock;
 DROP TABLE IF EXISTS Company;
 DROP TABLE IF EXISTS Positions;
@@ -35,6 +36,24 @@ CREATE TABLE Account (
   balance DECIMAL(19,4),
   
   FOREIGN KEY (customer_id) REFERENCES Customer(id)
+);
+
+CREATE TABLE LoanRequest (
+  id INTEGER NOT NULL PRIMARY KEY,
+  customer_id INTEGER NOT NULL,
+  request_date DATE NOT NULL,
+  available_funds DECIMAL(19,4) NOT NULL,
+  loan_amount DECIMAL(19,4) NOT NULL,
+  down_payment DECIMAL(19,4) NOT NULL,
+  approved BOOLEAN,
+  response_date DATE,
+  loan_account_id INTEGER,
+  provider_name VARCHAR(255),
+  message VARCHAR(255),
+  status VARCHAR(10) NOT NULL,
+
+  FOREIGN KEY (customer_id) REFERENCES Customer(id),
+  FOREIGN KEY (loan_account_id) REFERENCES Account(id)
 );
 
 DROP TABLE IF EXISTS News;

@@ -32,6 +32,8 @@ public class JdbcAdminDao extends JdbcDaoSupport implements AdminDao {
 
     private static final Resource INSERT_RESOURCE = new ClassPathResource(SQL_PACKAGE + "insert.sql");
 
+    private static final Resource MIGRATE_LOAN_REQUEST_RESOURCE = new ClassPathResource(SQL_PACKAGE + "migrate-loan-request.sql");
+
     private static final Resource RESET_RESOURCE = new ClassPathResource(SQL_PACKAGE + "reset.sql");
 
     private List<DynamicDataInserter> inserters;
@@ -63,6 +65,8 @@ public class JdbcAdminDao extends JdbcDaoSupport implements AdminDao {
         }
         if (initializeDb) {
             initializeDB();
+        } else {
+            migrateDB();
         }
         if (resetDb) {
             performReset();
@@ -129,6 +133,19 @@ public class JdbcAdminDao extends JdbcDaoSupport implements AdminDao {
 
         log.info("Database initialized & populated");
 
+    }
+
+    private synchronized void migrateDB() {
+        log.info("Migrating parabank database...");
+        Connection con = null;
+        try {
+            con = getConnection();
+            ScriptUtils.executeSqlScript(con, MIGRATE_LOAN_REQUEST_RESOURCE);
+        } finally {
+            if (con != null) {
+                releaseConnection(con);
+            }
+        }
     }
 
     /**

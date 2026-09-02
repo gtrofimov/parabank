@@ -1,3 +1,4 @@
+DELETE FROM LoanRequest;
 DELETE FROM Stock;
 DELETE FROM Company;
 DELETE FROM Positions;
