@@ -56,6 +56,11 @@
 		<property name="sequenceDao" ref="sequenceDao" />
 	</bean>
 
+	<bean id="loanRequestDao" class="com.parasoft.parabank.dao.jdbc.JdbcLoanRequestDao">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sequenceDao" ref="sequenceDao" />
+	</bean>
+
 	<!-- ========================= DAOS ========================= -->
 
 	<bean id="sequenceDao" class="com.parasoft.parabank.dao.jdbc.JdbcSequenceDao">

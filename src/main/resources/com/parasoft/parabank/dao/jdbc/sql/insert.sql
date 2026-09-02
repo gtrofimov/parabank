@@ -40,6 +40,7 @@ INSERT INTO Sequence (name, next_id) VALUES ('Account', 13566);
 INSERT INTO Sequence (name, next_id) VALUES ('Transaction', 14476);
 INSERT INTO Sequence (name, next_id) VALUES ('Position', 13017);
 INSERT INTO Sequence (name, next_id) VALUES ('Stock', 111);
+INSERT INTO Sequence (name, next_id) VALUES ('LoanRequest', 15587);
 
 INSERT INTO Transaction (id, account_id, type, date, amount, description) VALUES (12145, 12345, 0, CONCAT(YEAR(CURRENT_DATE - '1' YEAR),'-12-11'),  300.00, 'Check # 1111');
 INSERT INTO Transaction (id, account_id, type, date, amount, description) VALUES (12256, 12345, 1, CONCAT(YEAR(CURRENT_DATE - '1' YEAR),'-12-12'),  100.00, 'Check # 1211');
