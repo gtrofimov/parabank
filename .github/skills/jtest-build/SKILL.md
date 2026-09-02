@@ -24,13 +24,47 @@ Treat `target/jtest/jtest.data.json` as stale when any of these is true:
 - `pom.xml` changed
 - any `src/main/java/**` file is newer than the data file
 - for `ut` and `both`, any `src/test/java/**` file is newer than the data file
+- for `ut` and `both`, any compiled test class in `target/test-classes/` has no corresponding source file in `src/test/java/` (deleted source, orphaned bytecode)
+
+To detect orphaned test classes before rebuilding:
+
+```bash
+comm -23 \
+  <(find target/test-classes -name "*.class" | sed 's|target/test-classes/||;s|\.class$||;s|\$.*||' | sort -u) \
+  <(find src/test/java -name "*.java"        | sed 's|src/test/java/||;s|\.java$||'               | sort -u)
+```
+
+If any orphans are found, run `mvn clean` before the rebuild command to purge stale bytecode. Orphaned classes cause ghost tests to appear in jtest.data.json and coverage artifacts.
+
+## Scoped Rebuild Rule
+
+Before running a full `ut` rebuild, check whether the staleness is caused **only** by new or modified test files (no `src/main/java/**` or `pom.xml` changes):
+
+```bash
+# identify stale-triggering files
+git diff --name-only HEAD   # or compare timestamps vs jtest.data.json
+```
+
+If **only** `src/test/java/**` files are newer (e.g., a newly generated test class), use a scoped rebuild targeting just those test classes instead of running the full test suite:
+
+```bash
+# scoped: rebuild data file for a single test class only
+mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true -Dtest=BillPayResultTest
+```
+
+Use the class name(s) of the changed test file(s) in `-Dtest=`. This updates `jtest.data.json` without executing the entire test suite.
+
+Only fall back to a full rebuild when:
+- `src/main/java/**` files changed, or
+- `pom.xml` changed, or
+- the scope of changed test files is too broad to scope a single `-Dtest=` argument.
 
 ## Procedure
 
 1. Ensure current working directory is repository root.
 2. Determine mode (`both` by default).
 3. If data file is fresh for the selected mode, reuse it.
-4. If stale or missing, regenerate based on mode.
+4. If stale or missing, apply the **Scoped Rebuild Rule** first: if only test files changed, do a scoped rebuild; otherwise regenerate based on mode.
 5. If mode is `both` (complete-run build phase), copy the generated data file to a reusable baseline snapshot:
 
 ```bash

@@ -17,9 +17,19 @@ Run unit tests from the repository root.
 1. Ensure current working directory is the repository root.
 2. Ensure `target/jtest/jtest.data.json` is present and current for UT.
    - If missing or stale, run `jtest-build` with mode `ut` first.
-   - If `jtest-build` ran in `ut` or `both` and requested scope is all tests, the Maven UT phase already executed; skip step 3 unless an explicit rerun was requested.
-   - If a scoped rerun is requested (class/method/package), always run step 3 with the requested scope.
-3. Run unit tests when needed. All tests:
+   - If `jtest-build` ran in `ut` or `both` and requested scope is all tests, the Maven UT phase already executed; skip step 4 unless an explicit rerun was requested.
+   - If a scoped rerun is requested (class/method/package), always run step 4 with the requested scope.
+3. **Pre-run orphan check:** Before running the Maven UT command, detect compiled test classes with no corresponding source file:
+
+```bash
+comm -23 \
+  <(find target/test-classes -name "*.class" | sed 's|target/test-classes/||;s|\.class$||;s|\$.*||' | sort -u) \
+  <(find src/test/java -name "*.java"        | sed 's|src/test/java/||;s|\.java$||'               | sort -u)
+```
+
+   If any orphans are found, prefix the Maven command with `clean` (e.g., `mvn clean test-compile jtest:agent ...`) to purge stale bytecode before executing. Log which classes were removed. Failure to clean means ghost tests will run and contaminate coverage artifacts.
+
+4. Run unit tests when needed. All tests:
 
 ```bash
 mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true
@@ -32,25 +42,30 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true -Dtest=JdbcCustomerDaoTest#testGetCustomer
 ```
 
-   Keep scope consistent between Maven and Jtest CLI:
-   - class/method scope: use `-Dtest=ClassName` or `-Dtest=ClassName#methodName` and mirror class scope in `jtestcli -include`.
-   - package/path scope: use matching `-include`/`-exclude` patterns in `jtestcli`.
+   **Important — two independent scope axes:**
+   - Maven `-Dtest=ClassName` controls **which tests run**. jtestcli `-include` does NOT affect test execution.
+   - jtestcli `-include` controls **which SOURCE files appear in coverage output**. Passing a test file path here produces `Coverage: 0/0` because no source file matches.
+   - To get coverage for a specific source file, use its source path in `-include` (e.g., `path:**/BillPayResult.java`).
+   - For package scope: use matching `-include`/`-exclude` patterns pointing to source packages.
 
-4. Run UT analysis:
+5. Run UT analysis:
 
 ```bash
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests"
 ```
 
-   Scope examples:
+   Source file scope examples (coverage output scoped to specific source files):
 
 ```bash
+# coverage for a specific source class
+jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "path:**/BillPayResult.java"
+# coverage for a source package
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "com/parasoft/parabank/dao/jdbc/**"
-jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "path:**/JdbcCustomerDaoTest.java"
+# coverage for a source subtree, excluding integration
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -include "com/parasoft/parabank/**" -exclude "**/integration/**"
 ```
 
-5. For complete-run UT phase (all tests), refresh reusable baseline artifacts:
+6. For complete-run UT phase (all tests), refresh reusable baseline artifacts:
 
 ```bash
 mkdir -p target/jtest/baseline
@@ -69,7 +84,7 @@ fi
 
    If either source file is not produced by the run, report it and continue.
 
-6. Coverage handoff:
+7. Coverage handoff:
     - If UT and coverage are both requested, hand off to `jtest-cov-analysis` after UT completes using refreshed artifacts.
     - If only coverage is requested, use `jtest-cov-analysis`.
 
