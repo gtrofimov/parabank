@@ -18,7 +18,9 @@ jtest-ft-cov/
 /soatest/report-parabank/
 /soatest/TestAssets/test_templates/
 /soatest/stubs/
-/reports
+/report/
+/reports/
+/.jtest-baseline/
 **/*.settings
 
 # Phabricator Arcanist
@@ -39,5 +41,3 @@ jtest-ft-cov/
 
 # IntelliJ
 out/
-
-report

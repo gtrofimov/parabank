@@ -54,13 +54,33 @@ Work on a dedicated branch off `master`. No force push. No push without approval
 Required before any source edit, so "new violations" and "new coverage" are
 measurable as a delta.
 
+Baselines live in `/.jtest-baseline/` — outside `target/` so `mvn clean` cannot
+destroy them, and outside `report/` so a later scan cannot overwrite them.
+The directory is gitignored; it is a local artifact, not a committed one.
+
+| File | Produced by |
+|------|-------------|
+| `sa-report.xml` | `builtin://CWE Top 25 + On the Cusp 2025` |
+| `ut-report.xml` | `builtin://Unit Tests` |
+| `coverage.xml` | `builtin://Unit Tests` |
+| `jtest.data.json` | `jtest-build` mode `both` |
+| `manifest.txt` | provenance: commit, configs, counts |
+
+Procedure, run on a clean `master`:
+
 1. `jtest-build` mode `both`
-2. `jtest-run-ut` all tests
-3. Copy `report/report.xml` and `report/coverage.xml` into `target/jtest/baseline/`
+2. `jtestcli ... -config "builtin://Unit Tests" -report report/ut-master`
+3. `jtestcli ... -config "builtin://CWE Top 25 + On the Cusp 2025" -report report/sa-master`
+4. Copy the four artifacts into `/.jtest-baseline/` and regenerate `manifest.txt`
 
-Baseline paths are already declared in `jtest-skills.config`.
+Paths are declared in `jtest-skills.config`.
 
-**Exit:** both baseline files exist.
+**Staleness rule:** the baseline is valid only while `git_commit` in
+`manifest.txt` still matches the tip of `master`. If `master` moves, re-run this
+phase before trusting any delta.
+
+**Exit:** all four artifacts plus the manifest exist, and the manifest commit
+matches `master`.
 
 ---
 
