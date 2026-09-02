@@ -21,16 +21,20 @@ import com.parasoft.parabank.dao.InMemoryAdminDao;
 import com.parasoft.parabank.dao.InMemoryCustomerDao;
 import com.parasoft.parabank.dao.InMemoryPositionDao;
 import com.parasoft.parabank.dao.InMemoryTransactionDao;
+import com.parasoft.parabank.dao.LoanRequestDao;
 import com.parasoft.parabank.dao.PositionDao;
 import com.parasoft.parabank.dao.TransactionDao;
 import com.parasoft.parabank.domain.Account;
 import com.parasoft.parabank.domain.Customer;
 import com.parasoft.parabank.domain.HistoryPoint;
+import com.parasoft.parabank.domain.LoanRequestHistory;
+import com.parasoft.parabank.domain.LoanResponse;
 import com.parasoft.parabank.domain.Position;
 import com.parasoft.parabank.domain.Transaction;
 import com.parasoft.parabank.domain.Transaction.TransactionType;
 import com.parasoft.parabank.domain.logic.AdminParameters;
 import com.parasoft.parabank.domain.logic.BankManager;
+import com.parasoft.parabank.domain.logic.LoanProvider;
 import com.parasoft.parabank.test.util.AbstractParaBankTest;
 
 /**
@@ -38,6 +42,27 @@ import com.parasoft.parabank.test.util.AbstractParaBankTest;
  *
  */
 public class BankManagerImplTest extends AbstractParaBankTest {
+    private static final class CapturingLoanRequestDao implements LoanRequestDao {
+        private LoanRequestHistory loanRequest;
+
+        @Override
+        public int createLoanRequest(final LoanRequestHistory loanRequest) {
+            this.loanRequest = loanRequest;
+            loanRequest.setId(1);
+            return loanRequest.getId();
+        }
+
+        @Override
+        public void updateLoanRequest(final LoanRequestHistory loanRequest) {
+            this.loanRequest = loanRequest;
+        }
+
+        @Override
+        public List<LoanRequestHistory> getLoanRequestsForCustomer(final int customerId) {
+            return new ArrayList<>();
+        }
+    }
+
     private static final int ACCOUNT1_ID = 1;
 
     private static final int ACCOUNT2_ID = 2;
@@ -75,6 +100,8 @@ public class BankManagerImplTest extends AbstractParaBankTest {
     private TransactionDao transactionDao;
 
     private AdminDao adminDao;
+
+    private CapturingLoanRequestDao loanRequestDao;
 
     @Override
     @Before
@@ -136,6 +163,7 @@ public class BankManagerImplTest extends AbstractParaBankTest {
         positionDao = new InMemoryPositionDao(positions, history);
         transactionDao = new InMemoryTransactionDao();
         adminDao = new InMemoryAdminDao();
+        loanRequestDao = new CapturingLoanRequestDao();
 
         adminDao.setParameter(AdminParameters.INITIAL_BALANCE, INITIAL_BALANCE.toString());
         adminDao.setParameter(AdminParameters.MINIMUM_BALANCE, MINIMUM_BALANCE.toString());
@@ -146,6 +174,7 @@ public class BankManagerImplTest extends AbstractParaBankTest {
         bankManager.setPositionDao(positionDao);
         bankManager.setTransactionDao(transactionDao);
         bankManager.setAdminDao(adminDao);
+        bankManager.setLoanRequestDao(loanRequestDao);
 
         this.bankManager = bankManager;
     }
@@ -270,6 +299,23 @@ public class BankManagerImplTest extends AbstractParaBankTest {
         assertEquals(1, accounts.size());
         final Account account = accounts.get(0);
         assertEquals(INITIAL_BALANCE.floatValue(), account.getBalance().floatValue(), 0.0001f);
+    }
+
+    @Test
+    public void testRequestLoanPersistsProviderOutcome() {
+        final LoanResponse response = new LoanResponse();
+        response.setApproved(true);
+        response.setLoanProviderName("local");
+        response.setMessage("Approved");
+        response.setResponseDate(new java.util.Date());
+        ((BankManagerImpl) bankManager).setLoanProvider(loanRequest -> response);
+
+        bankManager.requestLoan(CUSTOMER_ID, new BigDecimal("500.00"), new BigDecimal("50.00"), ACCOUNT3_ID);
+
+        assertEquals(Boolean.TRUE, loanRequestDao.loanRequest.getApproved());
+        assertEquals("COMPLETED", loanRequestDao.loanRequest.getStatus());
+        assertEquals("local", loanRequestDao.loanRequest.getProviderName());
+        assertNotNull(loanRequestDao.loanRequest.getLoanAccountId());
     }
 
     @Test

@@ -17,6 +17,7 @@
 	<bean id="bankManager" class="com.parasoft.parabank.domain.logic.impl.BankManagerImpl">
 		<property name="accountDao" ref="accountDao" />
 		<property name="customerDao" ref="customerDao" />
+		<property name="loanRequestDao" ref="loanRequestDao" />
 		<property name="positionDao" ref="positionDao" />
 		<property name="transactionDao" ref="transactionDao" />
 		<property name="adminDao" ref="adminDao" />
