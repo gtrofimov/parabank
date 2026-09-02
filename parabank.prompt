@@ -71,7 +71,7 @@ Procedure, run on a clean `master`:
 1. `jtest-build` mode `both`
 2. `jtestcli ... -config "builtin://Unit Tests" -report report/ut-master`
 3. `jtestcli ... -config "builtin://CWE Top 25 + On the Cusp 2025" -report report/sa-master`
-4. Copy the four artifacts into `/.jtest-baseline/` and regenerate `manifest.txt`
+4. Copy the five listed artifacts into `/.jtest-baseline/` and regenerate `manifest.txt`
 
 Paths are declared in `jtest-skills.config`.
 
@@ -79,7 +79,7 @@ Paths are declared in `jtest-skills.config`.
 `manifest.txt` still matches the tip of `master`. If `master` moves, re-run this
 phase before trusting any delta.
 
-**Exit:** all four artifacts plus the manifest exist, and the manifest commit
+**Exit:** all five artifacts plus the manifest exist, and the manifest commit
 matches `master`.
 
 ---
@@ -104,6 +104,7 @@ Read-only. No edits in this phase.
 Produce a task list. One task = one artifact.
 
 - schema: `LoanRequest` table in `create.sql`
+- migration: update existing local/deployed DB schema or reinitialize DB before API checks
 - DAO: `JdbcLoanRequestDao` + row mapper + Spring wiring
 - service: persist on request, read history per customer
 - REST: history endpoint
@@ -114,6 +115,19 @@ Produce a task list. One task = one artifact.
 - (deferred, no work) UI / E2E flows — record scope only
 
 **Exit:** human approves the task list.
+
+### API contract (locked)
+
+Endpoint: `GET /customers/{customerId}/loanRequests`.
+
+Response records contain `id`, `customerId`, `requestDate`, `availableFunds`,
+`loanAmount`, `downPayment`, `approved`, `responseDate`, `loanAccountId`,
+`providerName`, and `message`. Results sort newest first. Empty history returns
+HTTP `200` with `[]`. Unknown customer returns HTTP `404`.
+
+Persist request before calling the loan provider. Persist the provider outcome
+on normal response, including denied requests. Provider exceptions persist
+status `FAILED` with error details, then propagate the existing service error.
 
 ---
 
@@ -151,10 +165,14 @@ to change.
 **Read-only. This phase runs no tests and no builds.** It reads artifacts
 produced earlier.
 
-1. Read `report/report.xml` and `report/coverage.xml`
+1. Read final SA report `report/sa-final/report.xml` and final UT report and
+  coverage `report/ut-final/report.xml` and `report/ut-final/coverage.xml`
 2. Read SOAtest run output
-3. Compare against `target/jtest/baseline/` for the SA and coverage delta
-4. Compare against the Decision 5 thresholds
+3. Compare against `/.jtest-baseline/sa-report.xml` and
+  `/.jtest-baseline/coverage.xml`
+4. Measure coverage for new or modified production classes only; do not use
+  aggregate repository coverage for the 80% threshold.
+5. Compare against the Decision 5 thresholds
 
 **Exit:** thresholds met. Otherwise return to Execute.
 Maximum 3 loop iterations, then stop and ask the human.
@@ -176,6 +194,7 @@ Maximum 3 loop iterations, then stop and ask the human.
 - Verify phase reads reports only; it never executes tests.
 - No unrelated refactors, no old-bug fixes, no old-coverage-gap filling.
 - Do not commit `reports/`, `target/`, or `.vscode/`.
+- DTP project/build identity: `Parabank-Jenkins` / `Parabank-Jenkins-baseline`.
 
 ---
 
