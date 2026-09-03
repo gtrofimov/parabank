@@ -48,8 +48,8 @@ CREATE TABLE LoanRequest (
   approved BOOLEAN,
   response_date DATE,
   loan_account_id INTEGER,
-  provider_name VARCHAR(255),
-  message VARCHAR(255),
+  provider_name VARCHAR(4000),
+  message VARCHAR(4000),
   status VARCHAR(10) NOT NULL,
 
   FOREIGN KEY (customer_id) REFERENCES Customer(id),
