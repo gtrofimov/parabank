@@ -5,11 +5,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.parasoft.parabank.domain.Customer;
 import com.parasoft.parabank.domain.logic.BankManager;
 
-import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 public class LoanRequestHistoryResourceTest {
     @Test
@@ -19,14 +20,16 @@ public class LoanRequestHistoryResourceTest {
         when(bankManager.getCustomer(12212)).thenReturn(new Customer());
         resource.setBankManager(bankManager);
 
-        assertEquals(0, resource.getLoanRequests(12212).size());
+        assertEquals(Response.Status.OK.getStatusCode(), resource.getLoanRequests(12212).getStatus());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetLoanRequestsForUnknownCustomer() {
         final LoanRequestHistoryResource resource = new LoanRequestHistoryResource();
-        resource.setBankManager(mock(BankManager.class));
+        final BankManager bankManager = mock(BankManager.class);
+        when(bankManager.getCustomer(-1)).thenThrow(new EmptyResultDataAccessException(1));
+        resource.setBankManager(bankManager);
 
-        resource.getLoanRequests(-1);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resource.getLoanRequests(-1).getStatus());
     }
 }
