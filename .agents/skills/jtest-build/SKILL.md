@@ -97,6 +97,19 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 - After `ut` or `both`, continue with `jtest-run-ut`.
 - For test generation, continue with `jtest-create-ut`.
 
+## DTP Build Identity
+
+Before a report is published, resolve one build identity and reuse it for every
+Jtest and SOAtest report in that pipeline:
+
+```bash
+eval "$(.agents/skills/workflow-config/scripts/resolve-build-id.sh)"
+```
+
+`JTEST_BUILD_ID` overrides all defaults. CI uses `BUILD_NUMBER`; local runs use a
+UTC timestamp plus the short Git commit. Report commands pass this value with
+`-property build.id="$JTEST_BUILD_ID"` and `-property dtp.project="$DTP_PROJECT"`.
+
 ## Completion Checks
 - `target/jtest/jtest.data.json` exists.
 - command(s) for selected mode completed successfully.

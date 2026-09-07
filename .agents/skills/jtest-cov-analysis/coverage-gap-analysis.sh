@@ -29,10 +29,10 @@ Options:
   -h, --help                Show help.
 
 Examples:
-  bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh
-  bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --top 50
-  bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --include "src/main/java/com/parasoft/parabank/web/controller/"
-    bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --output csv --top 0 > target/jtest/coverage-gaps.csv
+    bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh
+    bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --top 50
+    bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --include "src/main/java/com/parasoft/parabank/web/controller/"
+    bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --output csv --top 0 > target/jtest/coverage-gaps.csv
 EOF
 }
 

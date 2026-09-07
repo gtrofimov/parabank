@@ -54,6 +54,20 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests"
 ```
 
+For a DTP-published complete run, resolve the shared build ID first, then pass
+the identity as command-line properties. This overrides the static default in
+`jtest.settings` and keeps all reports on one incremented build:
+
+```bash
+source .agents/skills/workflow-config/scripts/load-orchestration-config.sh
+source .agents/skills/workflow-config/scripts/resolve-build-id.sh
+jtestcli -data target/jtest/jtest.data.json -settings jtest.settings \
+   -config "builtin://Unit Tests" -report report/ut-final -publish \
+   -property "build.id=$JTEST_BUILD_ID" -property "dtp.project=$DTP_PROJECT" \
+   -property "dtp.url=$DTP_URL" -property "dtp.user=$DTP_USER" \
+   -property "dtp.password=$DTP_PASSWORD"
+```
+
    Source file scope examples (coverage output scoped to specific source files):
 
 ```bash

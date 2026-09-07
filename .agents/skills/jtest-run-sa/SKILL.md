@@ -45,6 +45,18 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Recommended Rules
    - include all CRITICAL and HIGH severity findings
    - if no CRITICAL/HIGH findings exist, include the top 5 findings by rule frequency
 
+For a DTP-published final report, use same build ID as UT and application coverage:
+
+```bash
+source .agents/skills/workflow-config/scripts/load-orchestration-config.sh
+source .agents/skills/workflow-config/scripts/resolve-build-id.sh
+jtestcli -data target/jtest/jtest.data.json -settings jtest.settings \
+   -config "builtin://CWE Top 25 + On the Cusp 2025" -report report/sa-final -publish \
+   -property "build.id=$JTEST_BUILD_ID" -property "dtp.project=$DTP_PROJECT" \
+   -property "dtp.url=$DTP_URL" -property "dtp.user=$DTP_USER" \
+   -property "dtp.password=$DTP_PASSWORD"
+```
+
 ## Reporting
 
 Provide:

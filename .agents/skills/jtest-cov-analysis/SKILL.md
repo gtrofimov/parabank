@@ -52,14 +52,14 @@ done
 4. Run the coverage parser script to generate structured CSV data for analysis.
 
 ```bash
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --top 0 --method-top 0 --output csv
+bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --top 0 --method-top 0 --output csv
 ```
 
    Scope examples:
 
 ```bash
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --include "src/main/java/com/parasoft/parabank/web/controller/" --top 0 --method-top 0 --output csv
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --output csv --top 0 > target/jtest/coverage-gaps.csv
+bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --include "src/main/java/com/parasoft/parabank/web/controller/" --top 0 --method-top 0 --output csv
+bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "$COVERAGE_XML" --output csv --top 0 > target/jtest/coverage-gaps.csv
 ```
 
 4. Skill-side analysis and formatting (mandatory):

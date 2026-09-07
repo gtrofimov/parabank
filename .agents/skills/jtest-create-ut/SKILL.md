@@ -69,7 +69,7 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -incl
 8. **Check coverage delta** for the targeted source class(es) using the coverage XML produced by the scoped Jtest run in step 6 (`target/jtest/coverage.xml`). Do **not** re-run all tests or refresh the baseline just to report coverage — the scoped run already contains the relevant data.
 
 ```bash
-bash .github/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "target/jtest/coverage.xml" --include "<path/to/SourceClass.java>" --top 0 --method-top 0 --output csv
+bash .agents/skills/jtest-cov-analysis/coverage-gap-analysis.sh --coverage-xml "report/coverage.xml" --include "<path/to/SourceClass.java>" --top 0 --method-top 0 --output csv
 ```
 
 9. Report final pass/fail counts and coverage delta.
@@ -81,7 +81,7 @@ Provide:
 - test files generated
 - list of generated test file paths
 - test results after fix cycle: passed / failed / ignored
-- coverage for the targeted class(es) before and after (use `target/jtest/coverage.xml` from the scoped run)
+- coverage for the targeted class(es) before and after (use `report/coverage.xml` from the scoped run)
 
 ## Completion Checks
 - `jtestcli` completed with `builtin://Create Unit Tests`.

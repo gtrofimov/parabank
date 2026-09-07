@@ -62,6 +62,10 @@ Apache ActiveMQ listens on the default port number `61616`. This port number can
 ```
 
 # Test scripts
+> **Legacy:** `dev-scripts/` is retained for historical and Windows compatibility.
+> Current WSL and CI workflows use `orchestration.config`, local `.env`, and
+> runners under `.agents/skills/`.
+
 * All scripts exist in two flavors (.bat and .sh) for Windows and Linux respectively.
 * All scripts should be executed from project directory and require the following Parasoft products (and versions)
 ** Parasoft DTP 5.3.2
