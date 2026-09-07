@@ -43,7 +43,7 @@ coverage_args=(
     -config "builtin://Calculate Application Coverage"
     -staticcoverage "$monitor_dir/static_coverage.xml"
     -runtimecoverage "$runtime_dir"
-    -settings jtest.settings
+    -settings "$JTEST_SETTINGS_FILE"
     -property "build.id=$JTEST_BUILD_ID"
     -property "dtp.project=$DTP_PROJECT"
     -report "$report_dir"

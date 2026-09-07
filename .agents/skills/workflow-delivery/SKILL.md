@@ -96,8 +96,10 @@ Exit when all required gates have evidence attached.
 - custom skills: `.agents/skills/<skill-name>/SKILL.md`
 - reusable prompt templates: `.agents/templates/`
 - repo policy: `.github/copilot-instructions.md`
-- local credentials: `.env` or CI secrets, never committed
-- runtime defaults: `orchestration.config`
+- local credentials: `config/.env` or CI secrets, never committed
+- runtime defaults: `config/orchestration.config`
+- Jtest policy: `config/jtest-skills.config`
+- Jtest CLI settings: `config/jtest.settings`
 - shared config loader: `.agents/skills/workflow-config/scripts/load-orchestration-config.sh`
 - shared build-ID resolver: `.agents/skills/workflow-config/scripts/resolve-build-id.sh`
 

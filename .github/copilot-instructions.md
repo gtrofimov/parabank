@@ -13,9 +13,12 @@ When using MCP tools in this repository, call them sequentially.
 - Every workflow skill that needs runtime settings must source the shared loader from `.agents/skills/workflow-config/scripts/load-orchestration-config.sh`.
 - Every workflow skill that needs a DTP build identity must source `.agents/skills/workflow-config/scripts/resolve-build-id.sh`.
 - Do not duplicate config-path logic across skills. Use the shared scripts as the single source of truth.
-- Repo-owned runtime defaults live in `orchestration.config`.
+- Repo-owned runtime defaults live in `config/orchestration.config`.
+- Repo-owned Jtest baseline/policy config lives in `config/jtest-skills.config`.
+- Repo-owned Jtest CLI settings live in `config/jtest.settings`.
 - Repo-owned prompt templates live in `.agents/templates/`.
-- Local secrets stay in `.env` or CI secret storage, not in tracked repo files.
+- Local secrets stay in `config/.env` or CI secret storage, not in tracked repo files.
+- Legacy root-level config files remain readable only as compatibility fallback during transition.
 
 ## Jtest Parsing Rule
 - Prefer shell tools and custom scripts to parse Jtest report files and coverage XML when they are faster or better suited for the workflow.

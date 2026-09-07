@@ -10,11 +10,12 @@ workflow that needs environment configuration or a build identity.
 
 ## Configuration Ownership
 
-- `orchestration.config`: tracked non-secret runtime defaults.
-- `.env`: ignored local credentials and CI secrets.
+- `config/orchestration.config`: tracked non-secret runtime defaults.
+- `config/.env`: ignored local credentials and CI secrets.
 - CI secret store: credentials and `BUILD_NUMBER`.
 - `JTEST_BUILD_ID`: derived by `resolve-build-id.sh`, unless explicitly set.
-- `jtest-skills.config`: Jtest policy and baseline artifact paths only; not a source of runtime defaults.
+- `config/jtest-skills.config`: Jtest policy and baseline artifact paths only; not a source of runtime defaults.
+- `config/jtest.settings`: default Jtest CLI settings and DTP property placeholders.
 - `.agents/templates`: canonical repo-owned prompt and test-plan templates.
 - `.agents/skills`: canonical repo-owned workflow skills.
 

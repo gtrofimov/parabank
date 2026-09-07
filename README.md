@@ -63,7 +63,7 @@ Apache ActiveMQ listens on the default port number `61616`. This port number can
 
 # Test scripts
 > **Legacy:** `dev-scripts/` is retained for historical and Windows compatibility.
-> Current WSL and CI workflows use `orchestration.config`, local `.env`, and
+> Current WSL and CI workflows use `config/orchestration.config`, local `config/.env`, and
 > runners under `.agents/skills/`.
 
 * All scripts exist in two flavors (.bat and .sh) for Windows and Linux respectively.

@@ -50,7 +50,7 @@ For a DTP-published final report, use same build ID as UT and application covera
 ```bash
 source .agents/skills/workflow-config/scripts/load-orchestration-config.sh
 source .agents/skills/workflow-config/scripts/resolve-build-id.sh
-jtestcli -data target/jtest/jtest.data.json -settings jtest.settings \
+jtestcli -data target/jtest/jtest.data.json -settings "$JTEST_SETTINGS_FILE" \
    -config "builtin://CWE Top 25 + On the Cusp 2025" -report report/sa-final -publish \
    -property "build.id=$JTEST_BUILD_ID" -property "dtp.project=$DTP_PROJECT" \
    -property "dtp.url=$DTP_URL" -property "dtp.user=$DTP_USER" \

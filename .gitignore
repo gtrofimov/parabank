@@ -40,6 +40,8 @@ jtest-ft-cov/
 # Gradle:
 **/.idea/**/gradle.xml
 **/.idea/**/libraries/
+config/.env
+!config/.env.example
 
 # IntelliJ
 out/
