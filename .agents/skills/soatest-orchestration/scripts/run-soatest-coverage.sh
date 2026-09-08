@@ -10,9 +10,11 @@ usage() {
 Usage:
   scripts/run-soatest-coverage.sh <local|ci|publish> <application-coverage-dir> [--resource <path>]...
 
-Runs SOAtest and calculates Jtest application coverage. Before this command, run
-prepare-jtest-monitor.sh and start app server with emitted JTEST_MONITOR_JVM_ARGS.
-`application-coverage-dir` must be monitor deployment directory in app-server runtime.
+Runs SOAtest and calculates Jtest application coverage. For non-Docker app
+servers, run prepare-jtest-monitor.sh and start the app server with emitted
+JTEST_MONITOR_JVM_ARGS before this command. For the Docker deployment, run
+deploy-parabank-docker.sh before this command; monitor data is copied from the
+running container after SOAtest execution.
 USAGE
 }
 
@@ -28,14 +30,27 @@ case "$preset" in
     *) usage >&2; exit 2 ;;
 esac
 
-[[ -d "$coverage_dir" ]] || { echo "Application coverage directory not found: $coverage_dir" >&2; exit 2; }
-monitor_dir="$coverage_dir/monitor"
-runtime_dir="$monitor_dir/runtime_coverage"
 report_dir="${JTEST_APP_COVERAGE_REPORT:-$REPORT_APP_COVERAGE_ROOT}"
-[[ -f "$monitor_dir/agent.jar" && -f "$monitor_dir/static_coverage.xml" ]] || {
-    echo "Jtest monitor missing. Run prepare-jtest-monitor.sh before starting application server." >&2
+docker_container="${PARABANK_DOCKER_CONTAINER:-parabank-parabank-1}"
+copy_monitor_from_docker=false
+
+if [[ -d "$coverage_dir" ]]; then
+    monitor_dir="$coverage_dir/monitor"
+    runtime_dir="$monitor_dir/runtime_coverage"
+    [[ -f "$monitor_dir/agent.jar" && -f "$monitor_dir/static_coverage.xml" ]] || {
+        echo "Jtest monitor missing. Run prepare-jtest-monitor.sh before starting application server." >&2
+        exit 2
+    }
+elif command -v docker >/dev/null && docker inspect "$docker_container" >/dev/null 2>&1; then
+    copy_monitor_from_docker=true
+    coverage_dir=target/jtest/docker-monitor
+    monitor_dir="$coverage_dir/monitor"
+    runtime_dir="$monitor_dir/runtime_coverage"
+else
+    echo "Application coverage directory not found: $coverage_dir" >&2
+    echo "No running Docker container found for monitor copy: $docker_container" >&2
     exit 2
-}
+fi
 # shellcheck source=../../workflow-config/scripts/resolve-build-id.sh
 source "$soatest_script_dir/../../workflow-config/scripts/resolve-build-id.sh"
 
@@ -70,4 +85,16 @@ if [[ "$preset" == 'publish' && -z "${SOATEST_TEST_PRESET:-}" ]]; then
 fi
 SOATEST_REPORT="${SOATEST_REPORT:-$REPORT_SOATEST_ROOT/application-coverage}" \
     "$soatest_script_dir/run-soatest.sh" "$soatest_preset" "$@"
+
+if [[ "$copy_monitor_from_docker" == true ]]; then
+    rm -rf "$coverage_dir"
+    mkdir -p "$coverage_dir"
+    docker cp "$docker_container:/usr/local/tomcat/monitor" "$monitor_dir"
+fi
+
+[[ -f "$monitor_dir/static_coverage.xml" && -d "$runtime_dir" ]] || {
+    echo "Jtest monitor coverage data not found under: $monitor_dir" >&2
+    exit 2
+}
+
 jtestcli "${coverage_args[@]}"

@@ -49,8 +49,9 @@ directly to the SOAtest execution scripts in the order provided.
 2. Run the SOAtest health resource first with `run-soatest.sh` and an explicit
    report location.
 3. Run the requested API resources, preserving input order, with
-   `run-soatest-docker-coverage.sh` so Jtest calculates application coverage
-   from monitor runtime data copied out of the Docker container.
+   `run-soatest-coverage.sh` so Jtest calculates application coverage. For the
+   Docker deployment, that script copies monitor runtime data out of the running
+   Parabank container.
 
 Hard rules:
 

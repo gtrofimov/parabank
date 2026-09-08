@@ -71,9 +71,9 @@ filesystem for `/TestAssets/...` paths.
 1. Deploy or redeploy the monitored Docker application with
    `deploy-parabank-docker.sh`.
 2. Run the SOAtest health resource first with `run-soatest.sh`.
-3. Run requested API resources with `run-soatest-docker-coverage.sh` so Jtest
-   calculates application coverage from monitor runtime data copied out of the
-   Docker container.
+3. Run requested API resources with `run-soatest-coverage.sh` so Jtest
+   calculates application coverage. For Docker deployments, that script copies
+   monitor runtime data out of the running Parabank container.
 
 Preserve SOAtest resource order from the workflow input and reuse the shared
 build ID resolved by `workflow-config`.

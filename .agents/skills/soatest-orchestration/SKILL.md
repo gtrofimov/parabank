@@ -16,8 +16,6 @@ their dedicated scripts, not this routing contract.
 - Execute scenarios: use `scripts/soatestcli.sh`.
 - Prepare monitor deployment: use `scripts/prepare-jtest-monitor.sh`.
 - Run monitored application coverage after the app is running: use `scripts/run-soatest-coverage.sh`.
-- Run monitored Docker application coverage after Docker deployment: use
-  `scripts/run-soatest-docker-coverage.sh`.
 - Do not edit `.tst` assets directly.
 
 ## Execution
@@ -57,8 +55,9 @@ When API validation requires application coverage:
    instructions unless that command fails.
 2. Run any health scenario first with `run-soatest.sh` and an explicit report
    location.
-3. Run API scenarios with `run-soatest-docker-coverage.sh` so Jtest calculates
-   application coverage from monitor runtime data copied out of the container.
+3. Run API scenarios with `run-soatest-coverage.sh` so Jtest calculates
+   application coverage. For Docker deployments, this script copies monitor
+   runtime data out of the running Parabank container.
 
 For non-Docker application servers, run `prepare-jtest-monitor.sh` before
 starting the monitored application, then run `run-soatest-coverage.sh` after the
