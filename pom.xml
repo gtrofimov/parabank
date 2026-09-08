@@ -25,6 +25,7 @@
     <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
     <cargo-maven3-plugin.version>1.10.27</cargo-maven3-plugin.version>
     <dependency-check-maven.version>12.2.2</dependency-check-maven.version>
+    <jtest-maven-plugin.version>2026.2.0</jtest-maven-plugin.version>
     <soatest-maven-plugin.version>1.0.2</soatest-maven-plugin.version>
     <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
     <phase.start-container>pre-integration-test</phase.start-container>
@@ -681,6 +682,11 @@
       </testResource>
     </testResources>
     <plugins>
+      <plugin>
+        <groupId>com.parasoft.jtest</groupId>
+        <artifactId>jtest-maven-plugin</artifactId>
+        <version>${jtest-maven-plugin.version}</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
