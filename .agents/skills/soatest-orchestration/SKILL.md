@@ -12,7 +12,7 @@ their dedicated scripts, not this routing contract.
 
 ## Routing
 
-- Author or inspect scenarios: use SOAtest MCP tools.
+- Author, inspect, or resolve scenarios/resources: use SOAtest MCP tools.
 - Execute scenarios: use `scripts/soatestcli.sh`.
 - Prepare monitor deployment: use `scripts/prepare-jtest-monitor.sh`.
 - Run monitored application coverage after the app is running: use `scripts/run-soatest-coverage.sh`.
@@ -24,10 +24,11 @@ their dedicated scripts, not this routing contract.
 fail, and publish options. Always pass an explicit report location and preserve
 resource order.
 
-SOAtest resource paths are server workspace paths, not repository files. Pass
-paths such as `/TestAssets/example.tst` directly to SOAtest. Do not search the
-local filesystem for these resources unless the task is explicitly about local
-asset staging or authoring.
+SOAtest resource paths are server workspace paths, not repository files. Resolve
+or verify paths such as `/TestAssets/example.tst` with SOAtest MCP first, then
+pass the resolved path directly to SOAtest. Do not search the local filesystem
+for these resources unless the task is explicitly about local asset staging or
+authoring.
 
 ```bash
 .agents/skills/soatest-orchestration/scripts/soatestcli.sh \

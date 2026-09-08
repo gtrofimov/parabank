@@ -49,6 +49,7 @@ jobs:
           DTP_URL: "${{ secrets.DTP_URL }}"
           DTP_USER: "${{ secrets.DTP_USER }}"
           DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
+          SOATEST_MCP_AUTH_TOKEN: "${{ secrets.SOATEST_MCP_AUTH_TOKEN }}"
           BUILD_NUMBER: "${{ github.run_number }}"
           QUALITY_RUN_KIND: "${{ inputs.run_kind }}"
           QUALITY_PRESET: "${{ inputs.preset }}"

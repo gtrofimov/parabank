@@ -28,6 +28,12 @@ require_field() {
 : "${QUALITY_PRESET:=publish}"
 : "${SOATEST_HEALTH_RESOURCE:?Missing SOATEST_HEALTH_RESOURCE}"
 : "${SOATEST_API_RESOURCES:?Missing SOATEST_API_RESOURCES}"
+: "${SOATEST_MCP_AUTH_TOKEN:?Missing SOATEST_MCP_AUTH_TOKEN}"
+
+# shellcheck source=/dev/null
+source "$REPO_ROOT/.agents/skills/workflow-config/scripts/load-orchestration-config.sh"
+SOATEST_URL="${SOATEST_URL:-$SOATEST_SERVER}"
+SOATEST_MCP_URL="${SOATEST_URL%/}/soavirt/mcp"
 
 case "$QUALITY_RUN_KIND" in
     baseline|feature) ;;
@@ -48,6 +54,14 @@ if [[ "$QUALITY_PRESET" == publish ]]; then
         [[ -n "${!variable:-}" ]] || die "Missing required publish value: $variable"
     done
 fi
+
+ts "Registering SOAtest MCP server..."
+copilot mcp remove soatest-cicd >/dev/null 2>&1 || true
+copilot mcp add \
+    --transport http \
+    --header "Authorization: Basic ${SOATEST_MCP_AUTH_TOKEN}" \
+    soatest-cicd \
+    "$SOATEST_MCP_URL"
 
 ts "Running full baseline quality workflow..."
 PROMPT=$(

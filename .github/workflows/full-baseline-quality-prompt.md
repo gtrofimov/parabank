@@ -30,10 +30,18 @@ Required skill flow:
 
 SOAtest and monitor requirements:
 
-Treat `SOATEST_HEALTH_RESOURCE` and `SOATEST_API_RESOURCES` as SOAtest server
-workspace resource paths. They are not repository files. Do not use `find`,
-`ls`, or a local filesystem search to locate them. Pass them directly to the
-SOAtest execution scripts in the order provided.
+Use the `soatest-cicd` SOAtest MCP server to resolve and verify
+`SOATEST_HEALTH_RESOURCE` and `SOATEST_API_RESOURCES` before running shell
+scripts. Treat these values as SOAtest server workspace resource paths, not
+repository files. Do not use `find`, `ls`, or a local filesystem search to
+locate them.
+
+If SOAtest MCP tools are unavailable, stop and output:
+
+MCP_ERROR: SOAtest MCP tools unavailable
+
+After MCP verification succeeds, pass the resolved server resource paths
+directly to the SOAtest execution scripts in the order provided.
 
 1. Ensure `target/jtest/monitor/monitor.zip` exists. If it is missing, build it
    with the repository-owned monitor build flow.
@@ -50,6 +58,8 @@ Hard rules:
 
 - Do not use `run-functional-pipeline.sh`.
 - Do not edit `.tst` files directly.
+- Do not use shell commands to discover SOAtest `.tst` resources. Use SOAtest
+   MCP for resource lookup, then shell scripts for execution.
 - Do not create new feature behavior.
 - Do not rerun Jtest only for publishing; publish on first execution when
   publishing is requested.
