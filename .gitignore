@@ -21,7 +21,9 @@ jtest-ft-cov/
 /report/
 /reports/
 /.jtest-baseline/
+/.orchestration/
 **/*.settings
+.coverage
 
 # Phabricator Arcanist
 /.arcconfig

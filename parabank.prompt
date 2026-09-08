@@ -1,183 +1,112 @@
-# Feature: Loan Request History
+# Feature Prompt Template
 
-Goal-oriented loop. Phases run in order. Each phase has a required artifact and an
-exit condition. Do not advance until the exit condition is met.
+Use this template to define one feature or story. Generate a feature-specific instance during the define stage and keep it branch-scoped.
 
----
+## Feature Metadata
 
-## 0. Goal
+- Feature name: Loan Request History
+- Branch: feature/loan-history
+- Owner: local developer
+- Target milestone / release: local validation branch
+- Related issue or ticket: PGT
 
-As a customer I want to see the history of my loan requests.
+## Business Goal
 
-### Decisions (locked)
+As a customer, I want to see the history of my loan requests so I can review prior requests and outcomes without relying on incomplete derivation from account or transaction state.
 
-| # | Decision |
-|---|----------|
-| 1 | **Persist loan requests in DB: YES.** Derivation from `Transaction` is not sufficient — see Finding 1. |
-| 2 | History scope: **per customer**. |
-| 3 | Surface: **REST only.** No SOAP. No UI work in this iteration. |
-| 4 | Jira project key: `PGT`. DTP filter id: `33`. |
-| 5 | Thresholds: new-class line coverage >= 80%; zero new Sev1 SA violations vs `master` under `builtin://CWE Top 25 + On the Cusp 2025`. |
-| 6 | Runtime: build locally, deploy ParaBank locally (WSL). SOAVirt reachable via MCP. |
+## Problem Statement
 
-### Finding 1 — why persistence is required
+The current flow persists the approved loan account and withdrawal transaction but does not retain the original loan request details or the denied outcome. That prevents a customer from reviewing previous loan requests, including denied and failed attempts, using a consistent API contract.
 
-`BankManagerImpl.requestLoan` persists nothing about the request itself.
-On approval it creates a `LOAN`-type `Account` and one withdrawal `Transaction`
-described `"Down Payment for Loan # <accountId>"`. Therefore:
+## Scope
 
-- Denied requests leave **no trace at all** — not derivable.
-- Approved requests are only partially derivable: the loan account `balance`
-  drifts as the loan is repaid, so the original `loanAmount` is unrecoverable.
-- `availableFunds` and `requestDate` are not persisted.
+### In Scope
+- Persist loan request metadata and outcome per customer
+- Expose a REST-only history endpoint for customer loan requests
+- Update the API contract and local validation artifacts
+- Validate with SA, UT, coverage, and functional/API tests
 
-Rule from Decision 1 ("no if derivable, yes if not") therefore resolves to **yes**.
+### Out of Scope
+- UI or JSP changes
+- SOAP contract changes
+- Unrelated bug fixes
+- Existing SOAtest or Virtualize asset reuse
 
-### Non-goals
+## Non-Goals
 
-- No UI / JSP / E2E work. Recorded as future scope only.
-- No SOAP contract change.
-- No fixing pre-existing bugs.
-- No closing pre-existing coverage gaps.
-- No reuse or modification of existing SOAtest or Virtualize assets.
+- No UI / JSP / E2E work
+- No SOAP contract change
+- No fixing pre-existing bugs
+- No broad cleanup work not required by this feature
 
----
+## Locked Decisions
 
-## 1. Branch
+- Decision 1: Persist loan requests in DB; derivation from transaction history is insufficient.
+- Decision 2: History is scoped per customer.
+- Decision 3: Surface is REST only; no SOAP or UI work in this iteration.
+- Decision 4: DTP filter ID is 33.
+- Decision 5: New-class coverage target is at least 80%; zero new Sev1 SA violations vs master under builtin://CWE Top 25 + On the Cusp 2025.
+- Decision 6: Local runtime uses WSL and port 8081 if 8080 is occupied.
 
-Work on a dedicated branch off `master`. No force push. No push without approval.
+## Functional Requirements
 
----
+1. Persist each loan request and its outcome for the customer.
+2. Return loan request history ordered newest first.
+3. Return HTTP 200 with an empty array for a customer with no requests.
+4. Return HTTP 404 for an unknown customer.
+5. Include request metadata and provider response details in the stored record.
 
-## 2. Baseline snapshot
+## API / Data Contract
 
-Required before any source edit, so "new violations" and "new coverage" are
-measurable as a delta.
+Describe the required external behavior, endpoints, payload shape, validation rules, and response semantics.
 
-Baselines live in `/.jtest-baseline/` — outside `target/` so `mvn clean` cannot
-destroy them, and outside `report/` so a later scan cannot overwrite them.
-The directory is gitignored; it is a local artifact, not a committed one.
+- Endpoint(s): GET /customers/{customerId}/loanRequests
+- Request contract: path variable customerId
+- Response contract: records include id, customerId, requestDate, availableFunds, loanAmount, downPayment, approved, responseDate, loanAccountId, providerName, and message
+- Error handling: unknown customer returns 404; provider exception persists FAILED and rethrows the service error
+- Persistence requirements: store request before provider call and persist provider outcome for both approved and denied requests
+- Ordering or sorting rules: results sort newest first
 
-| File | Produced by |
-|------|-------------|
-| `sa-report.xml` | `builtin://CWE Top 25 + On the Cusp 2025` |
-| `ut-report.xml` | `builtin://Unit Tests` |
-| `coverage.xml` | `builtin://Unit Tests` |
-| `jtest.data.json` | `jtest-build` mode `both` |
-| `manifest.txt` | provenance: commit, configs, counts |
+## Implementation Anchors
 
-Procedure, run on a clean `master`:
+- Core code: BankManagerImpl, LoanRequest model/service/DAO, customer loan request handling
+- Data layer: schema and migration for persisted loan request data
+- REST/UI/API layer: LoanRequestHistoryResource, Swagger definition
+- Tests: DAO/service/rest unit tests and generated SOAtest scenarios
+- Documentation: swagger.yaml and validation notes
 
-1. `jtest-build` mode `both`
-2. `jtestcli ... -config "builtin://Unit Tests" -report report/ut-master`
-3. `jtestcli ... -config "builtin://CWE Top 25 + On the Cusp 2025" -report report/sa-master`
-4. Copy the four artifacts into `/.jtest-baseline/` and regenerate `manifest.txt`
+## Acceptance Criteria
 
-Paths are declared in `jtest-skills.config`.
+- [ ] Loan request history is persisted in the database per customer
+- [ ] REST endpoint returns the expected history payload and ordering
+- [ ] Unknown customer returns HTTP 404
+- [ ] Empty customer history returns HTTP 200 with []
+- [ ] SA, UT, and API validation pass against the feature branch
+- [ ] Coverage and DTP publish evidence is captured for the new build
 
-**Staleness rule:** the baseline is valid only while `git_commit` in
-`manifest.txt` still matches the tip of `master`. If `master` moves, re-run this
-phase before trusting any delta.
+## Quality Gates
 
-**Exit:** all four artifacts plus the manifest exist, and the manifest commit
-matches `master`.
+- Static analysis: run SA on current branch and compare against the new baseline
+- Unit tests: pass feature-focused unit tests and regression checks
+- Functional/API tests: health and API scenarios pass on the feature branch
+- Coverage threshold: new production classes meet or exceed 80% line coverage
+- Security / compliance thresholds: no new Sev1 findings under builtin://CWE Top 25 + On the Cusp 2025
+- Baseline comparison: compare against fresh DTP baseline on the new server
 
----
+## Risk / Dependencies
 
-## 3. Observe
+- External dependency 1: new DTP URL and credentials
+- Known risk 1: stale Jtest or app coverage data if runs are not cleaned properly
+- Required environment or credentials: local WSL app runtime, DTP connection, SOAtest availability
 
-Read-only. No edits in this phase.
+## Validation Evidence Required
 
-1. Jira MCP — open items under project `PGT` related to loans
-2. DTP MCP — existing violations and coverage for the loan code paths
-3. `gh pr list` — in-flight work touching the same files
-4. Source: `LoanRequest`, `RequestLoanController`, `BankManagerImpl.requestLoan`,
-   `create.sql`, `src/main/webapp/WEB-INF/swagger.yaml`
+- SA report
+- UT report and coverage report
+- Functional or API report
+- Coverage report
+- DTP build reference for the new server
 
-**Artifact:** written current-state summary.
-**Exit:** summary produced, zero files modified.
+## Definition of Done
 
----
-
-## 4. Plan
-
-Produce a task list. One task = one artifact.
-
-- schema: `LoanRequest` table in `create.sql`
-- DAO: `JdbcLoanRequestDao` + row mapper + Spring wiring
-- service: persist on request, read history per customer
-- REST: history endpoint
-- API docs: update `src/main/webapp/WEB-INF/swagger.yaml`
-- unit tests: per new class
-- API scenarios: generated fresh via SOAtest MCP
-- health checks: generated fresh via SOAtest MCP
-- (deferred, no work) UI / E2E flows — record scope only
-
-**Exit:** human approves the task list.
-
----
-
-## 5. Execute
-
-Per task, in this order. Never batch tasks.
-
-1. Write code.
-2. **Static analysis first** — `jtest-run-sa` on changed files, plus the security
-   configuration. Fix violations now.
-3. Only once the code is stable and no further modification is expected,
-   generate unit tests (`jtest-create-ut`).
-4. `jtest-run-ut` on that class only.
-5. Commit.
-
-SA precedes test generation so tests are not written against code that is about
-to change.
-
----
-
-## 6. API assets
-
-- Update `src/main/webapp/WEB-INF/swagger.yaml` to describe the new endpoint.
-- Generate API test scenarios with SOAtest MCP. Do **not** reuse the existing
-  `.tst` assets under `soatest/TestAssets/`.
-- Generate health checks with SOAtest MCP. Run them first to distinguish an
-  unstable environment from a code defect.
-- Create Virtualize assets only **if** a dependency is genuinely unavailable.
-  Do not modify existing assets under `soatest/VirtualAssets/`.
-
----
-
-## 7. Verify
-
-**Read-only. This phase runs no tests and no builds.** It reads artifacts
-produced earlier.
-
-1. Read `report/report.xml` and `report/coverage.xml`
-2. Read SOAtest run output
-3. Compare against `target/jtest/baseline/` for the SA and coverage delta
-4. Compare against the Decision 5 thresholds
-
-**Exit:** thresholds met. Otherwise return to Execute.
-Maximum 3 loop iterations, then stop and ask the human.
-
----
-
-## 8. Rules
-
-- Branch off `master`, no force push, no push or PR without approval.
-- MCP calls strictly sequential — call, wait, evaluate, next. Never parallel.
-- Environment is WSL. Do **not** run the scripts in `dev-scripts/`; the `.bat`
-  files are Windows-only and the shell variants are not applicable here. They may
-  be read to learn the intended command shape, then replaced with a direct
-  invocation.
-- Do not reuse, modify, or depend on existing SOAtest `.tst` or Virtualize assets.
-  Generate new assets via SOAtest MCP. Create Virtualize assets only if required.
-- Static analysis runs before unit-test generation.
-- Verify phase reads reports only; it never executes tests.
-- No unrelated refactors, no old-bug fixes, no old-coverage-gap filling.
-- Do not commit `reports/`, `target/`, or `.vscode/`.
-
----
-
-## 9. Resources
-
-Jtest MCP · SOAtest MCP · Virtualize MCP · DTP MCP · Jira MCP · `gh`
+The feature is complete only when all acceptance criteria are met, all required validation evidence exists, and no blocking quality gate remains unresolved.

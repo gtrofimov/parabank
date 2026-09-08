@@ -65,9 +65,13 @@ Only fall back to a full rebuild when:
 2. Determine mode (`both` by default).
 3. If data file is fresh for the selected mode, reuse it.
 4. If stale or missing, apply the **Scoped Rebuild Rule** first: if only test files changed, do a scoped rebuild; otherwise regenerate based on mode.
-5. If mode is `both` (complete-run build phase), copy the generated data file to a reusable baseline snapshot:
+5. If mode is `both` (complete-run build phase), copy the generated data file to a reusable baseline snapshot only from the master branch:
 
 ```bash
+[[ "$(git branch --show-current)" == "master" ]] || {
+  echo "Refusing to refresh the baseline from a non-master branch" >&2
+  exit 2
+}
 mkdir -p target/jtest/baseline
 cp target/jtest/jtest.data.json target/jtest/baseline/jtest.data.json
 ```
@@ -101,7 +105,8 @@ mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.fai
 - `target/jtest/jtest.data.json` exists.
 - command(s) for selected mode completed successfully.
 - selected mode and scope were respected.
-- for `both` mode, `target/jtest/baseline/jtest.data.json` exists and matches the latest generated data file.
+- for `both` mode on `master`, `target/jtest/baseline/jtest.data.json` exists and matches the latest generated data file.
+- feature branches consume the existing master baseline and never replace it.
 
 ## Decision Rules
 - If mode is omitted, use `both`.

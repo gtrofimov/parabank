@@ -13,5 +13,5 @@ mvn tia:affected-tests test -Djtest.referenceCoverageFile=target/jtest/baseline/
 
 # Run SA
 ```
-jtestcli -data target/jtest/jtest.data.json -config "builtin://builtin://CWE Top 25 + On the Cusp 2025"
+jtestcli -data target/jtest/jtest.data.json -config "builtin://CWE Top 25 + On the Cusp 2025"
 ```
