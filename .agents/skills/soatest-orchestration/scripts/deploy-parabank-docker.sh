@@ -38,11 +38,11 @@ cp -f "$war_file" target/parabank.war
 
 "${compose[@]}" up -d --build --remove-orphans
 
-echo "Waiting for ParaBank to become healthy on port ${CARGO_SERVLET_PORT}..."
+echo "Waiting for ParaBank to become healthy on port ${PARABANK_SERVLET_PORT}..."
 curl -fsS --retry 30 --retry-connrefused --max-time 5 \
-    "http://localhost:${CARGO_SERVLET_PORT}/parabank/" >/dev/null
+    "http://localhost:${PARABANK_SERVLET_PORT}/parabank/" >/dev/null
 
 curl -fsS --retry 10 --retry-connrefused --max-time 5 \
     "http://localhost:${JTEST_AGENT_REST_PORT}/status" >/dev/null
 
-echo "ParaBank is up on ${CARGO_SERVLET_PORT}; Jtest monitor agent REST is up on ${JTEST_AGENT_REST_PORT}."
+echo "ParaBank is up on ${PARABANK_SERVLET_PORT}; Jtest monitor agent REST is up on ${JTEST_AGENT_REST_PORT}."

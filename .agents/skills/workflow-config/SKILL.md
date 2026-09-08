@@ -5,7 +5,7 @@ description: 'Load shared orchestration defaults and resolve one DTP build ID fo
 
 # Workflow Configuration
 
-Use this shared utility before any Jtest, SOAtest, Cargo, DTP, or other project
+Use this shared utility before any Jtest, SOAtest, Docker, DTP, or other project
 workflow that needs environment configuration or a build identity.
 
 ## Configuration Ownership
@@ -39,7 +39,7 @@ Published Jtest runs must use `scripts/publish-jtest.sh`. Do not call
 
 Use safe fallback defaults only for local-safe values with a standard repo default:
 
-- ports (`CARGO_SERVLET_PORT`)
+- ports (`PARABANK_SERVLET_PORT`, `JTEST_AGENT_REST_PORT`)
 - local service URLs (`SOATEST_SERVER`)
 - canonical report roots (`REPORT_ROOT`, `REPORT_JTEST_ROOT`,
   `REPORT_SOATEST_ROOT`, `REPORT_APP_COVERAGE_ROOT`)

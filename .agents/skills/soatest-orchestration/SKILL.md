@@ -14,8 +14,9 @@ their dedicated scripts, not this routing contract.
 
 - Author, inspect, or resolve scenarios/resources: use SOAtest MCP tools.
 - Execute scenarios: use `scripts/soatestcli.sh`.
-- Prepare monitor deployment: use `scripts/prepare-jtest-monitor.sh`.
-- Run monitored application coverage after the app is running: use `scripts/run-soatest-coverage.sh`.
+- Deploy monitored Parabank with Docker: use `scripts/deploy-parabank-docker.sh`.
+- Run monitored Docker application coverage after the app is running: use
+   `scripts/run-soatest-coverage.sh`.
 - Do not edit `.tst` assets directly.
 
 ## Execution
@@ -51,7 +52,7 @@ single pipeline wrapper.
 When API validation requires application coverage:
 
 1. For Docker-based Parabank validation, run `deploy-parabank-docker.sh`. Do not
-   inspect Docker volumes, Cargo plugin configuration, or README deployment
+   inspect Docker volumes, Maven plugin configuration, or README deployment
    instructions unless that command fails.
 2. Run any health scenario first with `run-soatest.sh` and an explicit report
    location.
@@ -59,10 +60,8 @@ When API validation requires application coverage:
    application coverage. For Docker deployments, this script copies monitor
    runtime data out of the running Parabank container.
 
-For non-Docker application servers, run `prepare-jtest-monitor.sh` before
-starting the monitored application, then run `run-soatest-coverage.sh` after the
-application is healthy. Missing or incomplete `target/jtest/monitor/monitor.zip`
-is a hard failure.
+Docker is the only supported monitored application deployment path for this
+workflow. Do not use alternate host-side application server preparation.
 
 Preserve the order of resources supplied by the caller and reuse the shared
 build ID resolved by `workflow-config`.

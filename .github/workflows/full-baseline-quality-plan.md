@@ -104,7 +104,6 @@ Optional variables for overriding repository defaults:
 ```text
 DTP_UT_COVERAGE_IMAGES
 DTP_SOATEST_COVERAGE_IMAGES
-CARGO_SERVLET_PORT
 JTEST_AGENT_REST_PORT
 REPORT_ROOT
 ```

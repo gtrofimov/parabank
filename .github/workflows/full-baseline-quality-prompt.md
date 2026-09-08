@@ -44,7 +44,7 @@ After MCP verification succeeds, pass the resolved server resource paths
 directly to the SOAtest execution scripts in the order provided.
 
 1. Deploy or redeploy the monitored Docker application with
-   `deploy-parabank-docker.sh`. Do not inspect Docker volumes, Cargo plugin
+   `deploy-parabank-docker.sh`. Do not inspect Docker volumes, Maven plugin
    configuration, or README deployment instructions unless that command fails.
 2. Run the SOAtest health resource first with `run-soatest.sh` and an explicit
    report location.
@@ -56,6 +56,8 @@ directly to the SOAtest execution scripts in the order provided.
 Hard rules:
 
 - Do not use `run-functional-pipeline.sh`.
+- Docker is the only supported monitored application deployment path. Do not use
+   alternate host-side application server preparation.
 - Do not edit `.tst` files directly.
 - Do not use shell commands to discover SOAtest `.tst` resources. Use SOAtest
    MCP for resource lookup, then shell scripts for execution.

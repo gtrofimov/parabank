@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.monitor
     ports:
-      - "${CARGO_SERVLET_PORT:-8081}:8080"
+      - "${PARABANK_SERVLET_PORT:-8081}:8080"
       - "${JTEST_AGENT_REST_PORT:-8050}:8050"
     volumes:
       - parabank_monitor_runtime:/usr/local/tomcat/monitor/runtime_coverage
