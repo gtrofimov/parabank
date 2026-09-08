@@ -23,10 +23,12 @@ Required skill flow:
 5. Use `jtest-cov-analysis` to summarize unit-test coverage from the generated
    coverage XML.
 6. Use `soatest-orchestration` for monitored API validation. Keep monitor
-   preparation, Parabank deployment, health validation, SOAtest execution, and
-   application coverage as explicit steps owned by that skill.
-7. If preset is `publish`, publish Jtest, SOAtest, and application coverage with
-   the same build ID.
+   preparation, Parabank deployment, health validation, and SOAtest execution
+   as explicit steps owned by that skill.
+7. Do not run Jtest's `Calculate Application Coverage` configuration. It is not
+   part of this workflow. Use the coverage XML already produced by the full
+   Jtest unit-test run as the single coverage source. If preset is `publish`,
+   publish Jtest and SOAtest with the same build ID.
 
 SOAtest and monitor requirements:
 
@@ -49,9 +51,8 @@ directly to the SOAtest execution scripts in the order provided.
 2. Run the SOAtest health resource first with `run-soatest.sh` and an explicit
    report location.
 3. Run the requested API resources, preserving input order, with
-   `run-soatest-coverage.sh` so Jtest calculates application coverage. For the
-   Docker deployment, that script copies monitor runtime data out of the running
-   Parabank container.
+   `run-soatest.sh`. Do not invoke `run-soatest-coverage.sh` or calculate
+   application coverage from monitor files.
 
 Hard rules:
 
@@ -64,7 +65,7 @@ Hard rules:
 - Do not create new feature behavior.
 - Do not rerun Jtest only for publishing; publish on first execution when
   publishing is requested.
-- Use the same resolved build ID for SA, UT, SOAtest, and application coverage.
+- Use the same resolved build ID for SA, UT, and SOAtest.
 - Use repository config from `config/orchestration.config` and
    `config/jtest-skills.config`.
 - Use `$JTEST_HOME/jtestcli.properties` only for Jtest installation settings such
@@ -91,5 +92,5 @@ COVERAGE_XML=<path or -->
 SOATEST_STATUS=passed|failed
 SOATEST_REPORT=<path or -->
 APP_COVERAGE_STATUS=passed|failed
-APP_COVERAGE_REPORT=<path or -->
+APP_COVERAGE_REPORT=<same path as COVERAGE_XML>
 PARSER_PATH=<shell/custom|MCP|mixed>

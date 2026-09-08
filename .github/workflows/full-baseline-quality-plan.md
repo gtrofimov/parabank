@@ -17,7 +17,9 @@ The workflow should run a complete Parabank quality baseline:
 4. Analyze unit-test coverage.
 5. Deploy or redeploy Parabank with the Jtest monitor enabled.
 6. Run SOAtest health and API resources.
-7. Calculate and optionally publish application coverage from monitor runtime data.
+7. Do not calculate application coverage from monitor runtime data. Use the
+   coverage XML produced by the full Jtest unit-test run as the single coverage
+   source.
 
 ## Proposed Files
 
@@ -71,9 +73,8 @@ filesystem for `/TestAssets/...` paths.
 1. Deploy or redeploy the monitored Docker application with
    `deploy-parabank-docker.sh`.
 2. Run the SOAtest health resource first with `run-soatest.sh`.
-3. Run requested API resources with `run-soatest-coverage.sh` so Jtest
-   calculates application coverage. For Docker deployments, that script copies
-   monitor runtime data out of the running Parabank container.
+3. Run requested API resources with `run-soatest.sh`. Do not invoke
+   `run-soatest-coverage.sh` or calculate application coverage.
 
 Preserve SOAtest resource order from the workflow input and reuse the shared
 build ID resolved by `workflow-config`.
@@ -131,7 +132,7 @@ COVERAGE_XML=<path or -->
 SOATEST_STATUS=passed|failed
 SOATEST_REPORT=<path or -->
 APP_COVERAGE_STATUS=passed|failed
-APP_COVERAGE_REPORT=<path or -->
+APP_COVERAGE_REPORT=<same path as COVERAGE_XML>
 PARSER_PATH=<shell/custom|MCP|mixed>
 ```
 

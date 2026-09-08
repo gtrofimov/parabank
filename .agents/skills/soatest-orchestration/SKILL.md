@@ -56,9 +56,10 @@ When API validation requires application coverage:
    instructions unless that command fails.
 2. Run any health scenario first with `run-soatest.sh` and an explicit report
    location.
-3. Run API scenarios with `run-soatest-coverage.sh` so Jtest calculates
-   application coverage. For Docker deployments, this script copies monitor
-   runtime data out of the running Parabank container.
+3. Run API scenarios with `run-soatest.sh`. Do not run Jtest's `Calculate
+   Application Coverage` configuration or create a second coverage report from
+   monitor runtime data. Use the coverage XML produced by the full Jtest
+   unit-test run as the canonical coverage report.
 
 Docker is the only supported monitored application deployment path for this
 workflow. Do not use alternate host-side application server preparation.
