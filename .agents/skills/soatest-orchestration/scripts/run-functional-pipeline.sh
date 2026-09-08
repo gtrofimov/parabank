@@ -49,7 +49,7 @@ done
 [[ -n "$health_resource" && ${#resources[@]} -gt 0 ]] || { usage >&2; exit 2; }
 
 eval "$($script_dir/prepare-jtest-monitor.sh)"
-log_file="${SOATEST_REPORT_ROOT}/cargo-${JTEST_BUILD_ID}.log"
+log_file="${REPORT_SOATEST_ROOT}/cargo-${JTEST_BUILD_ID}.log"
 mkdir -p "$(dirname "$log_file")"
 mvn cargo:run -DskipTests -Dcargo.servlet.port="$CARGO_SERVLET_PORT" \
     -Dcargo.jvmargs="$JTEST_MONITOR_JVM_ARGS" >"$log_file" 2>&1 &
@@ -63,7 +63,7 @@ trap cleanup EXIT
 curl -fsS --retry 30 --retry-connrefused --max-time 5 \
     "http://localhost:${CARGO_SERVLET_PORT}/parabank/" >/dev/null
 
-SOATEST_REPORT="$SOATEST_REPORT_ROOT/health-$JTEST_BUILD_ID" \
+SOATEST_REPORT="$REPORT_SOATEST_ROOT/health-$JTEST_BUILD_ID" \
     "$script_dir/run-soatest.sh" ci --resource "$health_resource"
-SOATEST_REPORT="$SOATEST_REPORT_ROOT/api-$JTEST_BUILD_ID" \
+SOATEST_REPORT="$REPORT_SOATEST_ROOT/api-$JTEST_BUILD_ID" \
     "$script_dir/run-soatest-coverage.sh" "$preset" "$JTEST_MONITOR_HOME" "${resources[@]}"

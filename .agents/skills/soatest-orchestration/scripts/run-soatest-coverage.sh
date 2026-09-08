@@ -31,7 +31,7 @@ esac
 [[ -d "$coverage_dir" ]] || { echo "Application coverage directory not found: $coverage_dir" >&2; exit 2; }
 monitor_dir="$coverage_dir/monitor"
 runtime_dir="$monitor_dir/runtime_coverage"
-report_dir="${JTEST_APP_COVERAGE_REPORT:-$JTEST_APP_COVERAGE_REPORT_ROOT}"
+report_dir="${JTEST_APP_COVERAGE_REPORT:-$REPORT_APP_COVERAGE_ROOT}"
 [[ -f "$monitor_dir/agent.jar" && -f "$monitor_dir/static_coverage.xml" ]] || {
     echo "Jtest monitor missing. Run prepare-jtest-monitor.sh before starting application server." >&2
     exit 2
@@ -64,6 +64,6 @@ soatest_preset="${SOATEST_TEST_PRESET:-$preset}"
 if [[ "$preset" == 'publish' && -z "${SOATEST_TEST_PRESET:-}" ]]; then
     soatest_preset='ci'
 fi
-SOATEST_REPORT="${SOATEST_REPORT:-$SOATEST_REPORT_ROOT/application-coverage}" \
+SOATEST_REPORT="${SOATEST_REPORT:-$REPORT_SOATEST_ROOT/application-coverage}" \
     "$soatest_script_dir/run-soatest.sh" "$soatest_preset" "$@"
 jtestcli "${coverage_args[@]}"

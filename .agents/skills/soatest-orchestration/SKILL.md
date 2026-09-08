@@ -29,7 +29,7 @@ resource order.
   -server "$SOATEST_SERVER" \
   -config "$SOATEST_CONFIG" \
   -fail \
-  -report "$SOATEST_REPORT_ROOT/<run>" \
+  -report "$REPORT_SOATEST_ROOT/<run>" \
   -resource /TestAssets/<scenario>.tst
 ```
 

@@ -39,7 +39,9 @@ Use safe fallback defaults only for local-safe values with a standard repo defau
 
 - ports (`CARGO_SERVLET_PORT`)
 - local service URLs (`SOATEST_SERVER`)
-- default report roots (`SOATEST_REPORT_ROOT`, `JTEST_APP_COVERAGE_REPORT_ROOT`)
+- canonical report roots (`REPORT_ROOT`, `REPORT_JTEST_ROOT`,
+  `REPORT_SOATEST_ROOT`, `REPORT_APP_COVERAGE_ROOT`)
+- legacy report aliases remain supported
 - repo-standard names (`DTP_PROJECT`)
 
 Do not add fallback defaults for secrets or credentials. Leave those empty in `.env` and require environment injection in CI.

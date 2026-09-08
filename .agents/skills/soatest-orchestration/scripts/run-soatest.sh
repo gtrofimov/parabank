@@ -46,7 +46,7 @@ if [[ "$preset" == publish ]]; then
     done
 fi
 
-report_dir="${SOATEST_REPORT:-$SOATEST_REPORT_ROOT/soatest-$JTEST_BUILD_ID}"
+report_dir="${SOATEST_REPORT:-$REPORT_SOATEST_ROOT/soatest-$JTEST_BUILD_ID}"
 mkdir -p "$report_dir"
 
 soatest_args=(
