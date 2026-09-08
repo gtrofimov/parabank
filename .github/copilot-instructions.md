@@ -2,6 +2,24 @@
 
 When using MCP tools in this repository, call them sequentially.
 
+## Skill and template location
+- Store repository-owned custom agent skills in `.agents/skills/<skill-name>/SKILL.md`.
+- Store reusable repository templates in `.agents/templates/<template-name>.*`.
+- Use the `.agents` tree for repo-owned workflow, prompt, and config bootstrap assets only.
+- Do not add new skills under `.github/skills`.
+- Do not create local-only copies of repo templates or workflow files outside the repo-controlled `.agents` tree.
+
+## Config resolution contract
+- Every workflow skill that needs runtime settings must source the shared loader from `.agents/skills/workflow-config/scripts/load-orchestration-config.sh`.
+- Every workflow skill that needs a DTP build identity must source `.agents/skills/workflow-config/scripts/resolve-build-id.sh`.
+- Do not duplicate config-path logic across skills. Use the shared scripts as the single source of truth.
+- Repo-owned runtime defaults live in `config/orchestration.config`.
+- Repo-owned Jtest baseline/policy config lives in `config/jtest-skills.config`.
+- Repo-owned Jtest CLI settings live in `config/jtest.settings`.
+- Repo-owned prompt templates live in `.agents/templates/`.
+- Local secrets stay in `config/.env` or CI secret storage, not in tracked repo files.
+- Legacy root-level config files remain readable only as compatibility fallback during transition.
+
 ## Jtest Parsing Rule
 - Prefer shell tools and custom scripts to parse Jtest report files and coverage XML when they are faster or better suited for the workflow.
 - Use Jtest MCP tooling when shell parsing fails, output is malformed, or MCP-only data is required (for example, rule documentation or line-level coverage).
@@ -24,6 +42,14 @@ When using MCP tools in this repository, call them sequentially.
 - Jtest mode selection belongs to the matching vendor-provided Jtest skill.
 - `workflow-delivery` owns cross-phase order; it does not duplicate Jtest
 	procedures.
+
+## Configuration ownership and fallback policy
+- `orchestration.config` is the repo-owned source of non-secret runtime defaults.
+- `.env` and `.env.example` are reserved for local/CI secrets and credentials only. Never put runtime defaults there.
+- `jtest-skills.config` is for Jtest-specific baseline and policy settings only. Do not add runtime default values here.
+- `.agents/skills/workflow-config` owns the load/resolve logic for shared workflow configuration.
+- Safe fallback defaults are allowed only for local-safe values such as ports, hostnames, report roots, and repo-standard names. Secrets must remain unset and must be injected from the environment.
+- Precedence is: explicit environment values > repo defaults > safe local fallback values.
 
 ## Required behavior
 - Run MCP tool calls one at a time.

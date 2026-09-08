@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.parasoft.parabank.dao.AccountDao;
 import com.parasoft.parabank.dao.AdminDao;
 import com.parasoft.parabank.dao.CustomerDao;
+import com.parasoft.parabank.dao.LoanRequestDao;
 import com.parasoft.parabank.dao.PositionDao;
 import com.parasoft.parabank.dao.TransactionDao;
 import com.parasoft.parabank.domain.Account;
@@ -17,6 +18,7 @@ import com.parasoft.parabank.domain.Account.AccountType;
 import com.parasoft.parabank.domain.Customer;
 import com.parasoft.parabank.domain.HistoryPoint;
 import com.parasoft.parabank.domain.LoanRequest;
+import com.parasoft.parabank.domain.LoanRequestHistory;
 import com.parasoft.parabank.domain.LoanResponse;
 import com.parasoft.parabank.domain.Position;
 import com.parasoft.parabank.domain.Transaction;
@@ -40,6 +42,8 @@ public class BankManagerImpl implements BankManager {
     private AdminDao adminDao;
 
     private LoanProvider loanProvider;
+
+    private LoanRequestDao loanRequestDao;
 
     /*
      * (non-Javadoc)
@@ -296,9 +300,26 @@ public class BankManagerImpl implements BankManager {
         loanRequest.setDownPayment(downPayment);
         loanRequest.setLoanAmount(amount);
 
+        final LoanRequestHistory loanRequestHistory = new LoanRequestHistory();
+        loanRequestHistory.setCustomerId(customerId);
+        loanRequestHistory.setRequestDate(loanRequest.getRequestDate());
+        loanRequestHistory.setAvailableFunds(availableFunds);
+        loanRequestHistory.setDownPayment(downPayment);
+        loanRequestHistory.setLoanAmount(amount);
+        loanRequestHistory.setStatus("PENDING");
+        loanRequestDao.createLoanRequest(loanRequestHistory);
+
         log.info("Submitting loan request for customer with id = " + customerId + " in the amount of $" + amount
             + " at " + loanRequest.getRequestDate());
-        final LoanResponse loanResponse = loanProvider.requestLoan(loanRequest);
+        final LoanResponse loanResponse;
+        try {
+            loanResponse = loanProvider.requestLoan(loanRequest);
+        } catch (final RuntimeException ex) {
+            loanRequestHistory.setMessage(ex.getMessage());
+            loanRequestHistory.setStatus("FAILED");
+            loanRequestDao.updateLoanRequest(loanRequestHistory);
+            throw ex;
+        }
 
         if (loanResponse.isApproved()) {
             final Account loanAccount = new Account();
@@ -306,11 +327,24 @@ public class BankManagerImpl implements BankManager {
             loanAccount.setType(AccountType.LOAN);
             loanAccount.setBalance(amount);
             final int accountId = accountDao.createAccount(loanAccount);
-            loanResponse.setAccountId(accountId);
+            loanResponse.setAccountId(Integer.valueOf(accountId));
             withdraw(fromAccountId, downPayment, "Down Payment for Loan # " + accountId);
         }
 
+        loanRequestHistory.setApproved(Boolean.valueOf(loanResponse.isApproved()));
+        loanRequestHistory.setResponseDate(loanResponse.getResponseDate());
+        loanRequestHistory.setLoanAccountId(loanResponse.getAccountId());
+        loanRequestHistory.setProviderName(loanResponse.getLoanProviderName());
+        loanRequestHistory.setMessage(loanResponse.getMessage());
+        loanRequestHistory.setStatus("COMPLETED");
+        loanRequestDao.updateLoanRequest(loanRequestHistory);
+
         return loanResponse;
+    }
+
+    @Override
+    public List<LoanRequestHistory> getLoanRequestsForCustomer(final int customerId) {
+        return loanRequestDao.getLoanRequestsForCustomer(customerId);
     }
 
     /*
@@ -356,6 +390,10 @@ public class BankManagerImpl implements BankManager {
 
     public void setLoanProvider(final LoanProvider loanProvider) {
         this.loanProvider = loanProvider;
+    }
+
+    public void setLoanRequestDao(final LoanRequestDao loanRequestDao) {
+        this.loanRequestDao = loanRequestDao;
     }
 
     public void setPositionDao(final PositionDao positionDao) {

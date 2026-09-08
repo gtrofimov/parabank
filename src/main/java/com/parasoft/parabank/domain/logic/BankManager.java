@@ -7,6 +7,7 @@ import java.util.List;
 import com.parasoft.parabank.domain.Account;
 import com.parasoft.parabank.domain.Customer;
 import com.parasoft.parabank.domain.HistoryPoint;
+import com.parasoft.parabank.domain.LoanRequestHistory;
 import com.parasoft.parabank.domain.LoanResponse;
 import com.parasoft.parabank.domain.Position;
 import com.parasoft.parabank.domain.Transaction;
@@ -233,4 +234,6 @@ public interface BankManager {
      */
     LoanResponse requestLoan(int customerId, BigDecimal amount,
             BigDecimal downPayment, int fromAccountId);
+
+    List<LoanRequestHistory> getLoanRequestsForCustomer(int customerId);
 }

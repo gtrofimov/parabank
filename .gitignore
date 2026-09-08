@@ -36,10 +36,14 @@ jtest-ft-cov/
 **/.idea/**/workspace.xml
 **/.idea/**/runConfigurations/
 .vscode
+*.env
+!.env.example
 
 # Gradle:
 **/.idea/**/gradle.xml
 **/.idea/**/libraries/
+config/.env
+!config/.env.example
 
 # IntelliJ
 out/

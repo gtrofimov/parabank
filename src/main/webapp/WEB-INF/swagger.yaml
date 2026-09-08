@@ -118,6 +118,30 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Account"
+  /customers/{customerId}/loanRequests:
+    get:
+      tags:
+      - "Loans"
+      summary: "Get customer loan request history"
+      operationId: "getLoanRequests"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "customerId"
+        in: "path"
+        description: "Customer's id"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Loan request history, or an empty list when no requests exist"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/LoanRequestHistory"
+        404:
+          description: "Customer not found"
   /accounts/{accountId}/transactions/amount/{amount}:
     get:
       tags:
@@ -578,6 +602,36 @@ definitions:
     xml:
       name: "loanResponse"
       namespace: "http://service.parabank.parasoft.com/"
+  LoanRequestHistory:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      customerId:
+        type: "integer"
+        format: "int32"
+      requestDate:
+        type: "string"
+        format: "date-time"
+      availableFunds:
+        type: "number"
+      loanAmount:
+        type: "number"
+      downPayment:
+        type: "number"
+      approved:
+        type: "boolean"
+      responseDate:
+        type: "string"
+        format: "date-time"
+      loanAccountId:
+        type: "integer"
+        format: "int32"
+      providerName:
+        type: "string"
+      message:
+        type: "string"
   Payee:
     type: "object"
     properties:
