@@ -57,6 +57,10 @@ jobs:
           SOATEST_API_RESOURCES: "${{ inputs.api_resources }}"
         run: bash .github/workflows/full-baseline-quality.sh
 
+      - name: Destroy ParaBank Docker deployment
+        if: always()
+        run: docker compose --project-name parabank -f compose.parabank.yml down --volumes --remove-orphans
+
       - name: Upload quality evidence
         if: always()
         uses: actions/upload-artifact@v4
