@@ -14,8 +14,8 @@ their dedicated scripts, not this routing contract.
 
 - Author or inspect scenarios: use SOAtest MCP tools.
 - Execute scenarios: use `scripts/soatestcli.sh`.
-- Run monitored application coverage: use `scripts/run-soatest-coverage.sh`.
-- Run managed health/API pipeline: use `scripts/run-functional-pipeline.sh`.
+- Prepare monitor deployment: use `scripts/prepare-jtest-monitor.sh`.
+- Run monitored application coverage after the app is running: use `scripts/run-soatest-coverage.sh`.
 - Do not edit `.tst` assets directly.
 
 ## Execution
@@ -36,11 +36,24 @@ resource order.
 Use `-publish` only when DTP publication is requested. Credentials come from
 `config/.env` or CI secrets.
 
-## Managed Coverage
+## Monitored API Coverage
 
-Use `run-functional-pipeline.sh` when health gating, Cargo lifecycle, monitor
-deployment, SOAtest execution, and application coverage form one workflow. It
-must receive explicit `--health` and one or more `--resource` arguments.
+Keep monitor deployment, application lifecycle, SOAtest execution, and
+application coverage as explicit orchestration steps. Do not hide them behind a
+single pipeline wrapper.
 
-Use `prepare-jtest-monitor.sh` only before starting the monitored application.
-Missing or incomplete `target/jtest/monitor/monitor.zip` is a hard failure.
+When API validation requires application coverage:
+
+1. Ensure `target/jtest/monitor/monitor.zip` exists. If it is missing, build it
+  through the repository-owned monitor build flow before deployment.
+2. Run `prepare-jtest-monitor.sh` before starting the monitored application.
+  Missing or incomplete `target/jtest/monitor/monitor.zip` is a hard failure.
+3. Start or redeploy Parabank with the emitted `JTEST_MONITOR_JVM_ARGS`.
+4. Wait for the configured Parabank health endpoint before running tests.
+5. Run any health scenario first with `run-soatest.sh` and an explicit report
+  location.
+6. Run API scenarios with `run-soatest-coverage.sh` so Jtest calculates
+  application coverage from the monitor runtime data.
+
+Preserve the order of resources supplied by the caller and reuse the shared
+build ID resolved by `workflow-config`.
