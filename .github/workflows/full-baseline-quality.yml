@@ -1,0 +1,70 @@
+name: Full Baseline Quality
+
+"on":
+  workflow_dispatch:
+    inputs:
+      run_kind:
+        description: Baseline refresh or feature validation
+        required: true
+        default: baseline
+        type: choice
+        options:
+          - baseline
+          - feature
+      preset:
+        description: Report mode
+        required: true
+        default: publish
+        type: choice
+        options:
+          - ci
+          - publish
+      health_resource:
+        description: SOAtest health resource
+        required: true
+        default: /TestAssets/generated_by_mcp/Parabank_Health.tst
+        type: string
+      api_resources:
+        description: Newline-separated SOAtest API resources
+        required: true
+        default: /TestAssets/generated_by_mcp/Loan_Request_History_API.tst
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  full-baseline-quality:
+    name: CWE SA, UT Coverage, Monitor, SOAtest
+    runs-on: self-hosted
+    timeout-minutes: 75
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run full baseline quality workflow
+        env:
+          COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          DTP_URL: "${{ secrets.DTP_URL }}"
+          DTP_USER: "${{ secrets.DTP_USER }}"
+          DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
+          BUILD_NUMBER: "${{ github.run_number }}"
+          QUALITY_RUN_KIND: "${{ inputs.run_kind }}"
+          QUALITY_PRESET: "${{ inputs.preset }}"
+          SOATEST_HEALTH_RESOURCE: "${{ inputs.health_resource }}"
+          SOATEST_API_RESOURCES: "${{ inputs.api_resources }}"
+        run: bash .github/workflows/full-baseline-quality.sh
+
+      - name: Upload quality evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-baseline-quality-evidence
+          path: |
+            reports/
+            report/
+            target/jtest/baseline/
+            .orchestration/
+            full_baseline_quality.txt
+            full_baseline_quality_verify.txt
