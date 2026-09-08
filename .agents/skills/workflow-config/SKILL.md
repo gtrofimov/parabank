@@ -15,7 +15,9 @@ workflow that needs environment configuration or a build identity.
 - CI secret store: credentials and `BUILD_NUMBER`.
 - `JTEST_BUILD_ID`: derived by `resolve-build-id.sh`, unless explicitly set.
 - `config/jtest-skills.config`: Jtest policy and baseline artifact paths only; not a source of runtime defaults.
-- `config/jtest.settings`: default Jtest CLI settings and DTP property placeholders.
+- `$JTEST_HOME/jtestcli.properties`: Jtest installation settings such as licensing.
+    Project-specific report, DTP, and coverage settings must be passed on the
+    command line.
 - `.agents/templates`: canonical repo-owned prompt and test-plan templates.
 - `.agents/skills`: canonical repo-owned workflow skills.
 

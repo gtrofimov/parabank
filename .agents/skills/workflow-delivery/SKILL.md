@@ -116,7 +116,8 @@ Exit when all required gates have evidence attached.
 - local credentials: `config/.env` or CI secrets, never committed
 - runtime defaults: `config/orchestration.config`
 - Jtest policy: `config/jtest-skills.config`
-- Jtest CLI settings: `config/jtest.settings`
+- Jtest installation settings and licensing: `$JTEST_HOME/jtestcli.properties`
+- project-specific Jtest settings: command-line properties
 - shared config/build-ID utility: `.agents/skills/workflow-config/`
 
 Skills that need runtime config or a build identity use the shared utility. Do

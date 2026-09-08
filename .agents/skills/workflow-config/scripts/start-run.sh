@@ -14,7 +14,7 @@ mkdir -p "$run_dir"
 manifest="$run_dir/manifest.env"
 commit=$(git rev-parse HEAD)
 branch=$(git branch --show-current)
-config_hash=$(sha256sum "$ORCHESTRATION_CONFIG_FILE" "$JTEST_SETTINGS_FILE" "$JTEST_SKILLS_CONFIG_FILE" | sha256sum | awk '{print $1}')
+config_hash=$(sha256sum "$ORCHESTRATION_CONFIG_FILE" "$JTEST_SKILLS_CONFIG_FILE" | sha256sum | awk '{print $1}')
 
 if [[ -f "$manifest" ]]; then
     # shellcheck source=/dev/null

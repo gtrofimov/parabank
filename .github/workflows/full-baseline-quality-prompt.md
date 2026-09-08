@@ -49,8 +49,11 @@ Hard rules:
 - Do not rerun Jtest only for publishing; publish on first execution when
   publishing is requested.
 - Use the same resolved build ID for SA, UT, SOAtest, and application coverage.
-- Use repository config from `config/orchestration.config`,
-  `config/jtest.settings`, and `config/jtest-skills.config`.
+- Use repository config from `config/orchestration.config` and
+   `config/jtest-skills.config`.
+- Use `$JTEST_HOME/jtestcli.properties` only for Jtest installation settings such
+   as licensing. Pass project-specific Jtest values explicitly on the command
+   line.
 - If run kind is `baseline`, refresh baseline snapshots only when the checked-out
   branch is `master`.
 - If run kind is `feature`, consume existing baseline artifacts and do not

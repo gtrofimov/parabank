@@ -13,10 +13,6 @@ case "$mode" in
     *) echo "Usage: $0 <baseline|feature|publish>" >&2; exit 2 ;;
 esac
 
-[[ -f "$JTEST_SETTINGS_FILE" ]] || {
-    echo "Missing Jtest settings: $JTEST_SETTINGS_FILE" >&2
-    exit 2
-}
 [[ -f "$JTEST_SKILLS_CONFIG_FILE" ]] || {
     echo "Missing Jtest policy config: $JTEST_SKILLS_CONFIG_FILE" >&2
     exit 2
@@ -45,15 +41,6 @@ case "$mode" in
         }
         ;;
 esac
-
-grep -q '^report\.coverage\.images=' "$JTEST_SETTINGS_FILE" || {
-    echo "Missing report.coverage.images" >&2
-    exit 2
-}
-grep -q '^report\.coverage\.static\.images=' "$JTEST_SETTINGS_FILE" || {
-    echo "Missing report.coverage.static.images" >&2
-    exit 2
-}
 
 printf 'Preflight passed: mode=%s branch=%s commit=%s project=%s\n' \
     "$mode" "$(git branch --show-current)" "$(git rev-parse --short HEAD)" "$DTP_PROJECT"

@@ -15,11 +15,6 @@ if [[ ! -f "$env_file" && -f "$legacy_root/.env" ]]; then
     env_file="$legacy_root/.env"
 fi
 
-jtest_settings_file="$config_dir/jtest.settings"
-if [[ ! -f "$jtest_settings_file" && -f "$legacy_root/jtest.settings" ]]; then
-    jtest_settings_file="$legacy_root/jtest.settings"
-fi
-
 jtest_skills_config_file="$config_dir/jtest-skills.config"
 if [[ ! -f "$jtest_skills_config_file" && -f "$legacy_root/jtest-skills.config" ]]; then
     jtest_skills_config_file="$legacy_root/jtest-skills.config"
@@ -29,7 +24,6 @@ fi
 
 export CONFIG_DIR="$config_dir"
 export ORCHESTRATION_CONFIG_FILE="$config_file"
-export JTEST_SETTINGS_FILE="$jtest_settings_file"
 export JTEST_SKILLS_CONFIG_FILE="$jtest_skills_config_file"
 export ENV_FILE="$env_file"
 
@@ -47,7 +41,7 @@ for variable in DTP_PROJECT DTP_UT_COVERAGE_IMAGES DTP_SOATEST_COVERAGE_IMAGES S
     export "$variable"
 done
 
-export CONFIG_DIR ORCHESTRATION_CONFIG_FILE JTEST_SETTINGS_FILE JTEST_SKILLS_CONFIG_FILE ENV_FILE
+export CONFIG_DIR ORCHESTRATION_CONFIG_FILE JTEST_SKILLS_CONFIG_FILE ENV_FILE
 
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
     return 0
@@ -60,6 +54,5 @@ for variable in DTP_PROJECT DTP_UT_COVERAGE_IMAGES DTP_SOATEST_COVERAGE_IMAGES S
 done
 printf 'export CONFIG_DIR=%q\n' "$config_dir"
 printf 'export ORCHESTRATION_CONFIG_FILE=%q\n' "$config_file"
-printf 'export JTEST_SETTINGS_FILE=%q\n' "$jtest_settings_file"
 printf 'export JTEST_SKILLS_CONFIG_FILE=%q\n' "$jtest_skills_config_file"
 printf 'export ENV_FILE=%q\n' "$env_file"

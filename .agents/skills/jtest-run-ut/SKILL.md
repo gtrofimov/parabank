@@ -56,7 +56,9 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests"
 
 For a DTP-published complete run, resolve the shared build ID first, then publish
 on this first Jtest execution. Do not run Maven tests or Jtest a second time just
-to publish. Command-line properties override static defaults in `jtest.settings`:
+to publish. Project-specific settings are passed as command-line properties;
+Jtest installation settings such as licensing come from
+`$JTEST_HOME/jtestcli.properties`:
 
 ```bash
 .agents/skills/workflow-config/scripts/publish-jtest.sh \

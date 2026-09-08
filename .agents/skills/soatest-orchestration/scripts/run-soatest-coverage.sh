@@ -43,9 +43,13 @@ coverage_args=(
     -config "builtin://Calculate Application Coverage"
     -staticcoverage "$monitor_dir/static_coverage.xml"
     -runtimecoverage "$runtime_dir"
-    -settings "$JTEST_SETTINGS_FILE"
     -property "build.id=$JTEST_BUILD_ID"
     -property "dtp.project=$DTP_PROJECT"
+    -property "report.coverage.static.images=$DTP_SOATEST_COVERAGE_IMAGES"
+    -property 'report.associations=true'
+    -property 'report.scontrol=full'
+    -property 'scope.local=true'
+    -property 'scope.xmlmap=false'
     -report "$report_dir"
 )
 if [[ "$preset" == 'publish' ]]; then

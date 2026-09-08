@@ -5,12 +5,9 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=../../workflow-config/scripts/load-orchestration-config.sh
 source "$script_dir/../../workflow-config/scripts/load-orchestration-config.sh"
 
-# Builds target/jtest/monitor/monitor.zip from compiled classes.
-# - report.coverage.static.images (from JTEST_SETTINGS_FILE) tags the packaged
-#   static_coverage.xml/agent settings with the DTP_SOATEST_COVERAGE_IMAGES set
-#   (default: Parabank_All;Parabank_SOAtest).
-# - agentServerEnabled exposes the agent's own REST status/control port
-#   (default 8050), separate from the deployed application's HTTP port.
+# Builds target/jtest/monitor/monitor.zip from compiled classes. Licensing is
+# read from $JTEST_HOME/jtestcli.properties; project settings are command-line
+# properties so CI does not depend on a repo-local Jtest settings file.
 mvn package jtest:monitor -DskipTests \
-    -Djtest.settings="$JTEST_SETTINGS_FILE" \
-    -Djtest.agentServerEnabled=true
+    -Djtest.agentServerEnabled=true \
+    -Dreport.coverage.static.images="$DTP_SOATEST_COVERAGE_IMAGES"

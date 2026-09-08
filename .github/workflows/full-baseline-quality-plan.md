@@ -102,6 +102,10 @@ JTEST_AGENT_REST_PORT
 REPORT_ROOT
 ```
 
+Jtest installation settings and licensing come from
+`$JTEST_HOME/jtestcli.properties`. Do not require a repo-local Jtest settings
+file; project-specific Jtest values are passed explicitly on the command line.
+
 ## Prompt Output Contract
 
 The main prompt should require these plain-text final metadata lines so the

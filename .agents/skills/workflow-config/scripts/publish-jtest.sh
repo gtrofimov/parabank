@@ -27,12 +27,16 @@ branch_mode=feature
 }
 mkdir -p "$report_dir"
 
-jtestcli -data "$data_file" -settings "$JTEST_SETTINGS_FILE" \
+jtestcli -data "$data_file" \
     -config "$config" -report "$report_dir" -publish \
     -property "build.id=$JTEST_BUILD_ID" \
     -property "dtp.project=$DTP_PROJECT" \
     -property "report.coverage.images=$DTP_UT_COVERAGE_IMAGES" \
     -property "report.coverage.static.images=$DTP_SOATEST_COVERAGE_IMAGES" \
+    -property 'report.associations=true' \
+    -property 'report.scontrol=full' \
+    -property 'scope.local=true' \
+    -property 'scope.xmlmap=false' \
     -property "dtp.url=$DTP_URL" \
     -property "dtp.user=$DTP_USER" \
     -property "dtp.password=$DTP_PASSWORD"

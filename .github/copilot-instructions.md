@@ -15,7 +15,8 @@ When using MCP tools in this repository, call them sequentially.
 - Do not duplicate config-path logic across skills. Use the shared scripts as the single source of truth.
 - Repo-owned runtime defaults live in `config/orchestration.config`.
 - Repo-owned Jtest baseline/policy config lives in `config/jtest-skills.config`.
-- Repo-owned Jtest CLI settings live in `config/jtest.settings`.
+- Jtest installation settings and licensing live in `$JTEST_HOME/jtestcli.properties`.
+- Project-specific Jtest report, DTP, and coverage settings are passed on the command line.
 - Repo-owned prompt templates live in `.agents/templates/`.
 - Local secrets stay in `config/.env` or CI secret storage, not in tracked repo files.
 - Legacy root-level config files remain readable only as compatibility fallback during transition.
@@ -47,6 +48,7 @@ When using MCP tools in this repository, call them sequentially.
 - `orchestration.config` is the repo-owned source of non-secret runtime defaults.
 - `.env` and `.env.example` are reserved for local/CI secrets and credentials only. Never put runtime defaults there.
 - `jtest-skills.config` is for Jtest-specific baseline and policy settings only. Do not add runtime default values here.
+- Do not require a repo-local Jtest settings file. Use `$JTEST_HOME/jtestcli.properties` for installation/licensing and pass project-specific Jtest values explicitly on the command line.
 - `.agents/skills/workflow-config` owns the load/resolve logic for shared workflow configuration.
 - Safe fallback defaults are allowed only for local-safe values such as ports, hostnames, report roots, and repo-standard names. Secrets must remain unset and must be injected from the environment.
 - Precedence is: explicit environment values > repo defaults > safe local fallback values.
