@@ -63,6 +63,10 @@ builtin://CWE Top 25 + On the Cusp 2025
 Do not use a single functional pipeline wrapper. Keep the monitored API coverage
 phase explicit and owned by `soatest-orchestration`:
 
+SOAtest resource inputs are server workspace resource paths, not repository
+files. The workflow must pass them directly to SOAtest scripts and must not scan
+the local filesystem for `/TestAssets/...` paths.
+
 1. Ensure `target/jtest/monitor/monitor.zip` exists. If missing, build it with
    the repository-owned monitor build flow.
 2. Run `prepare-jtest-monitor.sh` before starting Parabank.

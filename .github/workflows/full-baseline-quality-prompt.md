@@ -30,6 +30,11 @@ Required skill flow:
 
 SOAtest and monitor requirements:
 
+Treat `SOATEST_HEALTH_RESOURCE` and `SOATEST_API_RESOURCES` as SOAtest server
+workspace resource paths. They are not repository files. Do not use `find`,
+`ls`, or a local filesystem search to locate them. Pass them directly to the
+SOAtest execution scripts in the order provided.
+
 1. Ensure `target/jtest/monitor/monitor.zip` exists. If it is missing, build it
    with the repository-owned monitor build flow.
 2. Run `prepare-jtest-monitor.sh` before starting Parabank.

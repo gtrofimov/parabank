@@ -24,6 +24,11 @@ their dedicated scripts, not this routing contract.
 fail, and publish options. Always pass an explicit report location and preserve
 resource order.
 
+SOAtest resource paths are server workspace paths, not repository files. Pass
+paths such as `/TestAssets/example.tst` directly to SOAtest. Do not search the
+local filesystem for these resources unless the task is explicitly about local
+asset staging or authoring.
+
 ```bash
 .agents/skills/soatest-orchestration/scripts/soatestcli.sh \
   -server "$SOATEST_SERVER" \
