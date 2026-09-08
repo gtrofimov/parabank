@@ -16,6 +16,8 @@ their dedicated scripts, not this routing contract.
 - Execute scenarios: use `scripts/soatestcli.sh`.
 - Prepare monitor deployment: use `scripts/prepare-jtest-monitor.sh`.
 - Run monitored application coverage after the app is running: use `scripts/run-soatest-coverage.sh`.
+- Run monitored Docker application coverage after Docker deployment: use
+  `scripts/run-soatest-docker-coverage.sh`.
 - Do not edit `.tst` assets directly.
 
 ## Execution
@@ -50,16 +52,18 @@ single pipeline wrapper.
 
 When API validation requires application coverage:
 
-1. Ensure `target/jtest/monitor/monitor.zip` exists. If it is missing, build it
-  through the repository-owned monitor build flow before deployment.
-2. Run `prepare-jtest-monitor.sh` before starting the monitored application.
-  Missing or incomplete `target/jtest/monitor/monitor.zip` is a hard failure.
-3. Start or redeploy Parabank with the emitted `JTEST_MONITOR_JVM_ARGS`.
-4. Wait for the configured Parabank health endpoint before running tests.
-5. Run any health scenario first with `run-soatest.sh` and an explicit report
-  location.
-6. Run API scenarios with `run-soatest-coverage.sh` so Jtest calculates
-  application coverage from the monitor runtime data.
+1. For Docker-based Parabank validation, run `deploy-parabank-docker.sh`. Do not
+   inspect Docker volumes, Cargo plugin configuration, or README deployment
+   instructions unless that command fails.
+2. Run any health scenario first with `run-soatest.sh` and an explicit report
+   location.
+3. Run API scenarios with `run-soatest-docker-coverage.sh` so Jtest calculates
+   application coverage from monitor runtime data copied out of the container.
+
+For non-Docker application servers, run `prepare-jtest-monitor.sh` before
+starting the monitored application, then run `run-soatest-coverage.sh` after the
+application is healthy. Missing or incomplete `target/jtest/monitor/monitor.zip`
+is a hard failure.
 
 Preserve the order of resources supplied by the caller and reuse the shared
 build ID resolved by `workflow-config`.

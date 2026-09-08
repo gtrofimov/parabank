@@ -68,14 +68,12 @@ files. The workflow must resolve them through SOAtest MCP first, then pass the
 resolved paths directly to SOAtest scripts. It must not scan the local
 filesystem for `/TestAssets/...` paths.
 
-1. Ensure `target/jtest/monitor/monitor.zip` exists. If missing, build it with
-   the repository-owned monitor build flow.
-2. Run `prepare-jtest-monitor.sh` before starting Parabank.
-3. Start or redeploy Parabank with the emitted `JTEST_MONITOR_JVM_ARGS`.
-4. Wait for the configured Parabank health endpoint.
-5. Run the SOAtest health resource first with `run-soatest.sh`.
-6. Run requested API resources with `run-soatest-coverage.sh` so Jtest calculates
-   application coverage from monitor runtime data.
+1. Deploy or redeploy the monitored Docker application with
+   `deploy-parabank-docker.sh`.
+2. Run the SOAtest health resource first with `run-soatest.sh`.
+3. Run requested API resources with `run-soatest-docker-coverage.sh` so Jtest
+   calculates application coverage from monitor runtime data copied out of the
+   Docker container.
 
 Preserve SOAtest resource order from the workflow input and reuse the shared
 build ID resolved by `workflow-config`.
