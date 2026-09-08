@@ -22,7 +22,7 @@ name: Full Baseline Quality
       health_resource:
         description: SOAtest health resource
         required: true
-        default: /TestAssets/generated_by_mcp/Parabank_Health.tst
+        default: /TestAssets/generated_by_mcp/Loan_History_Health_Check.tst
         type: string
       api_resources:
         description: Newline-separated SOAtest API resources

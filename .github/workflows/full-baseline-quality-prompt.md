@@ -8,9 +8,9 @@ Inputs:
 - SOAtest API resources:
 ${SOATEST_API_RESOURCES}
 
-Read and follow repository policy in `.github/copilot-instructions.md` before
-running tools. Use existing repository skills for all heavy lifting. Do not
-reimplement their command logic in this prompt.
+Use existing repository skills for all heavy lifting. Execute required commands
+directly in listed order. Do not read unrelated files, inspect generated output
+repeatedly, or run diagnostic probes after a successful command.
 
 Required skill flow:
 
@@ -32,11 +32,10 @@ Required skill flow:
 
 SOAtest and monitor requirements:
 
-Use the `soatest-cicd` SOAtest MCP server to resolve and verify
+Use the `soatest-cicd` SOAtest MCP server to verify the supplied
 `SOATEST_HEALTH_RESOURCE` and `SOATEST_API_RESOURCES` before running shell
 scripts. Treat these values as SOAtest server workspace resource paths, not
-repository files. Do not use `find`, `ls`, or a local filesystem search to
-locate them.
+repository files. Perform one list/describe lookup per resource, then execute.
 
 If SOAtest MCP tools are unavailable, stop and output:
 
@@ -45,14 +44,15 @@ MCP_ERROR: SOAtest MCP tools unavailable
 After MCP verification succeeds, pass the resolved server resource paths
 directly to the SOAtest execution scripts in the order provided.
 
-1. Deploy or redeploy the monitored Docker application with
-   `deploy-parabank-docker.sh`. Do not inspect Docker volumes, Maven plugin
-   configuration, or README deployment instructions unless that command fails.
+1. Deploy or redeploy the monitored Docker application once with
+   `deploy-parabank-docker.sh`. Do not run manual Docker diagnostics or fixed
+   sleeps after it succeeds; the script performs readiness checks.
 2. Run the SOAtest health resource first with `run-soatest.sh` and an explicit
    report location.
 3. Run the requested API resources, preserving input order, with
    `run-soatest.sh`. Do not invoke `run-soatest-coverage.sh` or calculate
-   application coverage from monitor files.
+   application coverage from monitor files. Do not inspect SOAtest or coverage
+   reports beyond confirming the expected files exist.
 
 Hard rules:
 

@@ -97,29 +97,28 @@ for field in BUILD_ID SA_STATUS SA_REPORT UT_STATUS UT_REPORT COVERAGE_STATUS CO
     require_field "$field"
 done
 
-ts "Running evidence verification prompt..."
-VERIFY_PROMPT="$(cat "$SCRIPT_DIR/full-baseline-quality-verify-prompt.md")
-$(cat "$RUN_OUT")"
 rm -f "$VERIFY_OUT"
 
-set +e
-(
-    cd "$REPO_ROOT"
-    timeout 300 copilot --allow-all --no-ask-user -p "$VERIFY_PROMPT" < /dev/null | tee "$VERIFY_OUT"
-)
-verify_exit=${PIPESTATUS[0]}
-set -e
-
-if [[ $verify_exit -eq 124 ]]; then
-    die "Evidence verification timed out"
-fi
-if [[ $verify_exit -ne 0 ]]; then
-    die "Evidence verification failed with exit code $verify_exit"
-fi
-
-grep -Eq '^EVIDENCE_STATUS=valid[[:space:]]*$' "$VERIFY_OUT" || {
-    tail -80 "$VERIFY_OUT" || true
-    die "Missing EVIDENCE_STATUS=valid"
+get_field() {
+    local name="$1"
+    sed -n "s/^${name}=//p" "$RUN_OUT" | tail -n 1
 }
+
+for field in SA_REPORT UT_REPORT COVERAGE_XML SOATEST_REPORT; do
+    report_path=$(get_field "$field")
+    [[ -n "$report_path" && "$report_path" != '--' && -s "$REPO_ROOT/$report_path" ]] || {
+        echo "EVIDENCE_STATUS=invalid" | tee "$VERIFY_OUT"
+        die "Missing report artifact for $field: $report_path"
+    }
+done
+
+coverage_xml=$(get_field COVERAGE_XML)
+app_coverage_report=$(get_field APP_COVERAGE_REPORT)
+[[ "$app_coverage_report" == "$coverage_xml" ]] || {
+    echo "EVIDENCE_STATUS=invalid" | tee "$VERIFY_OUT"
+    die "APP_COVERAGE_REPORT must match COVERAGE_XML"
+}
+
+printf 'EVIDENCE_STATUS=valid\n' | tee "$VERIFY_OUT"
 
 ts "Full baseline quality workflow completed."
