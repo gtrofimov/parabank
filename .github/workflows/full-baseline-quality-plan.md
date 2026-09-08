@@ -90,6 +90,8 @@ SOATEST_MCP_AUTH_TOKEN
 
 `SOATEST_MCP_URL` is derived by the shell runner as
 `${SOATEST_URL:-$SOATEST_SERVER}/soavirt/mcp`; it is not a separate secret.
+`SOATEST_URL` is the SOAtest/SOAVirt MCP base URL and defaults to
+`http://localhost:9080`.
 
 ## Recommended GitHub Variables
 
