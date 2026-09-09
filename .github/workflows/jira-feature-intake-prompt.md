@@ -9,10 +9,11 @@ STRICT GUARDRAILS:
    - Phase 2 (Plan) & Phase 3 (Implement): Implement all code, unit tests, and SOAtest scenario changes required by the story.
    - Phase 4 (Validate): Execute static analysis (`jtest-run-sa`), unit tests (`jtest-run-ut`), SOAtest functional tests (`soatest-orchestration`), and coverage analysis (`jtest-cov-analysis`). DTP credentials (`DTP_URL`, `DTP_USER`, `DTP_PASSWORD`) are present in environment; publish reports to DTP during SA, UT, and SOAtest steps.
    - Phase 5 (Release & PR): Create accountability report (`.agents/instances/${JIRA_TICKET}/accountability-report.md`), commit all changes, push branch to origin, and create a Pull Request against `master` using `gh pr create`.
-5. MAX OPTIMIZATION & TOKEN CONSERVATION:
+5. MAX OPTIMIZATION, EXECUTION SPEED & TOKEN CONSERVATION:
    - Combine shell commands with `&&` into compound turns to minimize tool round-trips.
    - Truncate long command outputs (`| tail -n 30` or `grep`) to keep context window slim.
-   - Run validation linearly: execute each gate once without trial-and-error re-runs or comparative analysis.
+   - DO NOT RE-RUN JTEST OR BUILD COMMANDS: Run `mvn compile jtest:jtest` once to generate `target/jtest/jtest.data.json`, run `jtestcli` for SA once on touched classes, and run `mvn test jtest:jtest` once for UT + coverage. Do not execute comparative or multi-run SA/UT passes.
+   - Run validation linearly: execute each gate once without trial-and-error re-runs or duplicate scenario executions.
 6. Do not invent acceptance criteria or requirements not present in the Jira issue.
 7. On any failure (MCP, build, test, or git), report and stop immediately.
 8. End your final response with these plain-text metadata lines, one per line, no backticks/bullets/tables:
