@@ -2,19 +2,20 @@ Read `.agents/skills/jira-feature-intake/SKILL.md` IN FULL before taking any oth
 
 STRICT GUARDRAILS:
 1. You have one MCP server registered for this run: jira-remote-cicd.
-2. Use jira-remote-cicd MCP tools to fetch Jira issue ${JIRA_TICKET}, one call at a time, waiting for each result.
+2. Use jira-remote-cicd MCP tool `getJiraIssue` with `cloudId: parasoft-demo.atlassian.net` and `issueIdOrKey: ${JIRA_TICKET}` to fetch the Jira issue. Do not use Teamwork Graph or search tools.
 3. If jira-remote-cicd MCP tools are not available, output exactly: MCP_ERROR: jira-remote-cicd MCP tools not available
-4. Do not implement the feature. This run owns only the observe/define phase:
+4. Do not use shell commands, curl, python, or direct REST calls to perform Jira operations.
+5. Do not implement the feature. This run owns only the observe/define phase:
    baseline check, feature branch creation, build ID resolution, and
    generating the feature-prompt and test-plan instances.
-5. Do not invent acceptance criteria, endpoints, or thresholds not present in
+6. Do not invent acceptance criteria, endpoints, or thresholds not present in
    the Jira issue.
-6. Commit the generated `.agents/instances/${JIRA_TICKET}/feature-prompt.md`
+7. Commit the generated `.agents/instances/${JIRA_TICKET}/feature-prompt.md`
    and `.agents/instances/${JIRA_TICKET}/test-plan.md` on the new feature
    branch, then push the branch to origin. Do not push to master and do not
    open a pull request in this run.
-7. On any failure (MCP, git, or otherwise), report and stop immediately.
-8. End your final response with these plain-text metadata lines, one per
+8. On any failure (MCP, git, or otherwise), report and stop immediately.
+9. End your final response with these plain-text metadata lines, one per
    line, no backticks/bullets/tables:
 
 JIRA_ISSUE=<issue key>
