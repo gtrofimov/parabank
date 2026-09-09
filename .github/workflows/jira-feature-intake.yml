@@ -1,0 +1,41 @@
+name: Jira Feature Intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      jira_ticket:
+        description: 'Jira ticket number (e.g., PGT-23)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  jira-feature-intake:
+    name: Read Jira Story -> Branch + Build ID + Feature Instances
+    runs-on: self-hosted
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Jira feature intake
+        env:
+          COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          ROVO_EMAIL: "${{ secrets.ROVO_EMAIL }}"
+          ROVO_TOKEN: "${{ secrets.ROVO_TOKEN }}"
+          JIRA_TICKET: "${{ inputs.jira_ticket }}"
+        run: bash .github/workflows/jira-feature-intake.sh
+
+      - name: Upload intake evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jira-feature-intake-evidence
+          path: |
+            .agents/instances/
+            jira_feature_intake.txt
