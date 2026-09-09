@@ -47,6 +47,24 @@ Read the two canonical templates before drafting anything:
 
 ### 3. Observe — read the Jira requirement
 
+In an interactive VS Code session, the Atlassian MCP server is already
+configured globally; skip straight to the tool calls below.
+
+In a non-interactive CI run (self-hosted `copilot` CLI, no pre-configured MCP
+servers), register it first using this repo's `ROVO_EMAIL`/`ROVO_TOKEN`
+secrets:
+
+```bash
+.agents/skills/jira-feature-intake/scripts/register-jira-mcp.sh
+```
+
+This builds the Basic-auth header from `ROVO_EMAIL:ROVO_TOKEN` and registers
+`jira-remote-cicd` against `https://mcp.atlassian.com/v1/mcp`, matching the
+pattern used by the sibling `VirtualizeMCPDemo` repo's
+`create-virtual-service.sh` (which uses a pre-combined `ATLASSIAN_BASIC_AUTH`
+secret instead — this repo's secrets are the unencoded email/token pair, so
+the script base64-encodes them itself).
+
 Use the Atlassian MCP tools sequentially (per repo MCP policy: one call at a
 time, wait for each result):
 
