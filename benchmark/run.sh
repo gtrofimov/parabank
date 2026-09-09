@@ -55,7 +55,7 @@ if [ "$CMD" = "setup" ]; then
   # 1. Create clean branch from base
   echo "[1/4] Creating branch ${BRANCH} from ${BASE_BRANCH}..."
   git checkout -b "$BRANCH" "$BASE_BRANCH"
-  rm -rf report/ target/
+  rm -rf reports/ target/
 
   # 2. Remove pre-existing domain test files (tracked + untracked)
   echo "[2/4] Cleaning domain test files..."

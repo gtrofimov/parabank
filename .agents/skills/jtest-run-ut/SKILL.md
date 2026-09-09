@@ -62,7 +62,7 @@ Jtest installation settings such as licensing come from
 
 ```bash
 .agents/skills/workflow-config/scripts/publish-jtest.sh \
-   ut "builtin://Unit Tests" report/ut-final target/jtest/jtest.data.json
+   ut "builtin://Unit Tests" reports/jtest/ut-final target/jtest/jtest.data.json
 ```
 
    Source file scope examples (coverage output scoped to specific source files):
@@ -84,16 +84,16 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://Unit Tests" -incl
    exit 2
 }
 mkdir -p target/jtest/baseline
-if [[ -f report/report.xml ]]; then
-   cp report/report.xml target/jtest/baseline/report.xml
+if [[ -f reports/jtest/ut-final/report.xml ]]; then
+   cp reports/jtest/ut-final/report.xml target/jtest/baseline/report.xml
 else
-   echo "report/report.xml not produced; skipping baseline copy"
+   echo "reports/jtest/ut-final/report.xml not produced; skipping baseline copy"
 fi
 
-if [[ -f report/coverage.xml ]]; then
-   cp report/coverage.xml target/jtest/baseline/coverage.xml
+if [[ -f reports/jtest/ut-final/coverage.xml ]]; then
+   cp reports/jtest/ut-final/coverage.xml target/jtest/baseline/coverage.xml
 else
-   echo "report/coverage.xml not produced; skipping baseline copy"
+   echo "reports/jtest/ut-final/coverage.xml not produced; skipping baseline copy"
 fi
 ```
 

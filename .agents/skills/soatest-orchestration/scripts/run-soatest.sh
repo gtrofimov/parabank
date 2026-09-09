@@ -53,6 +53,7 @@ soatest_args=(
     -server "$SOATEST_SERVER"
     -config "$SOATEST_CONFIG"
     -report "$report_dir"
+    -fail
     -property "build.id=$JTEST_BUILD_ID"
     -property 'session.tag=soatest'
     -property 'report.associations=true'

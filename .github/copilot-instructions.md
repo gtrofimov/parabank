@@ -30,14 +30,13 @@ When using MCP tools in this repository, call them sequentially.
 - Complete run definition: `jtest-build` in `both` mode plus `jtest-run-ut` for all tests.
 - For complete runs, maintain a `target/jtest/baseline` snapshot for reuse by later workflows.
 - In `jtest-build` complete runs (`both`) on the configured baseline branch only, copy `target/jtest/jtest.data.json` to `target/jtest/baseline/jtest.data.json`.
-- In `jtest-run-ut` complete runs (all tests) on the configured baseline branch only, copy `report/report.xml` to `target/jtest/baseline/report.xml` and `report/coverage.xml` to `target/jtest/baseline/coverage.xml` when those files are produced.
+- In `jtest-run-ut` complete runs (all tests) on the configured baseline branch only, copy `reports/jtest/ut-final/report.xml` to `target/jtest/baseline/report.xml` and `reports/jtest/ut-final/coverage.xml` to `target/jtest/baseline/coverage.xml` when those files are produced.
 - Create `target/jtest/baseline` if missing.
 
 ## Coverage Artifact Resolution
 - Resolve coverage XML in this order:
 	1) `target/jtest/baseline/coverage.xml`
-	2) `report/coverage.xml`
-	3) `target/jtest/coverage.xml` (legacy fallback for backward compatibility)
+	2) `reports/jtest/ut-final/coverage.xml`
 
 ## Mode Selection Matrix
 - Jtest mode selection belongs to the matching vendor-provided Jtest skill.

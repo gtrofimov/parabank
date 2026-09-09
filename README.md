@@ -84,5 +84,5 @@ __soatest(.sh\|.bat)__                 | Executes Parasoft SOAtest API and Web f
 
 ## Setup
 set-vars.(.sh\|.bat): setup JTEST_HOME and SOATEST_HOME environment variable before running any script.
-all reports will be stored under target/report/<build ID> directory.
+all reports will be stored under reports/<build ID> directory.
 on Windows, 7zip must be installed (default to C:\Program Files\7-zip) to run deploy-jtest-monitor.bat script.

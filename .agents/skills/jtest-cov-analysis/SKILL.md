@@ -14,15 +14,15 @@ Analyze coverage from Jtest output.
 
 ## Coverage Source
 - Primary: `target/jtest/baseline/coverage.xml`.
-- Fresh run output: `report/coverage.xml` — produced by every jtestcli run (scoped or full). Prefer this over the baseline when its modification time is more recent than `target/jtest/baseline/coverage.xml`.
-- Fallback: `target/jtest/baseline/coverage.xml` when `report/coverage.xml` is absent or older than the baseline.
+- Fresh run output: `reports/jtest/ut-final/coverage.xml`.
+- Baseline snapshot: `target/jtest/baseline/coverage.xml`.
 
 > **Note:** `target/jtest/coverage.xml` is **not** produced by standalone jtestcli in this project. Do not reference it as a coverage source.
 
 ## Missing/Stale Coverage Behavior
 
 If all supported coverage sources are missing or stale for the requested scope:
-1. Prefer a **scoped** UT re-run when the request targets a specific class or package — run only the relevant test class(es) via Maven `-Dtest=ClassName`, then run jtestcli with the source file in `-include` (e.g., `path:**/BillPayResult.java`) and use the freshly produced `report/coverage.xml`.
+1. Prefer a **scoped** UT re-run when the request targets a specific class or package — run only the relevant test class(es) via Maven `-Dtest=ClassName`, then run jtestcli with the source file in `-include` (e.g., `path:**/BillPayResult.java`) and use `reports/jtest/ut-final/coverage.xml`.
 2. Only fall back to running **all tests** (`jtest-run-ut`) when the scope is the entire project or no scoped test class can be identified.
 3. Continue coverage analysis after the UT run completes.
 
@@ -30,8 +30,8 @@ If all supported coverage sources are missing or stale for the requested scope:
 
 1. Ensure current working directory is repository root.
 2. Resolve coverage XML path:
-   - Check `report/coverage.xml` and `target/jtest/baseline/coverage.xml` modification times.
-   - If a jtestcli run was just performed, `report/coverage.xml` will be the most recent — use it.
+   - Check `reports/jtest/ut-final/coverage.xml` and `target/jtest/baseline/coverage.xml`.
+   - Use `reports/jtest/ut-final/coverage.xml` after a fresh UT run.
    - Otherwise use `target/jtest/baseline/coverage.xml` if it exists and is the freshest available.
    - If neither exists or both are stale, execute a **scoped** UT re-run (preferred) or a full `jtest-run-ut`.
    - Store the selected path in `COVERAGE_XML` and use that value for all parser commands.
@@ -100,8 +100,8 @@ Provide:
 
 ## Decision Rules
 - If user asks for coverage without asking to run tests and coverage is already current, analyze only.
-- If user asks for coverage and coverage is missing/stale for a **specific class or package**, re-run only the scoped test class(es) (Maven `-Dtest=`) and run jtestcli with the source file in `-include`; read coverage from the freshly produced `report/coverage.xml`.
-- If user asks for coverage and coverage is missing/stale for the **whole project**, run `jtest-run-ut` for all tests then analyze from the refreshed `report/coverage.xml` (copy to baseline after).
+- If user asks for coverage and coverage is missing/stale for a **specific class or package**, re-run only the scoped test class(es) (Maven `-Dtest=`) and run jtestcli with the source file in `-include`; read coverage from `reports/jtest/ut-final/coverage.xml`.
+- If user asks for coverage and coverage is missing/stale for the **whole project**, run `jtest-run-ut` for all tests then analyze from `reports/jtest/ut-final/coverage.xml` (copy to baseline after).
 - If user asks for UT and coverage together, run the appropriate scoped or full UT first, then analyze coverage from the resulting artifact.
 - If scope is ambiguous, ask one clarifier: class, package, path, or all.
 - Always prefer `coverage-gap-analysis.sh` for coverage ranking and top-gap identification.

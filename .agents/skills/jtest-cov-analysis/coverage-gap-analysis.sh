@@ -16,7 +16,7 @@ Options:
   -x, --coverage-xml PATH   Coverage XML path.
                            Default lookup order:
                            1) target/jtest/baseline/coverage.xml
-                           2) report/coverage.xml
+                           2) reports/jtest/ut-final/coverage.xml
                            3) target/jtest/coverage.xml
   -n, --top N               Number of rows to print after ranking.
                            Use 0 for all rows. Default: 20
@@ -42,8 +42,7 @@ resolve_default_coverage_xml() {
 
     for candidate in \
         "$repo_root/target/jtest/baseline/coverage.xml" \
-        "$repo_root/report/coverage.xml" \
-        "$repo_root/target/jtest/coverage.xml"
+        "$repo_root/reports/jtest/ut-final/coverage.xml"
     do
         if [[ -f "$candidate" ]]; then
             printf '%s\n' "$candidate"
@@ -150,8 +149,7 @@ if [[ -z "$coverage_xml" ]]; then
     if ! coverage_xml=$(resolve_default_coverage_xml "$repo_root"); then
         echo "No coverage XML found. Expected one of:" >&2
         echo "  $repo_root/target/jtest/baseline/coverage.xml" >&2
-        echo "  $repo_root/report/coverage.xml" >&2
-        echo "  $repo_root/target/jtest/coverage.xml" >&2
+        echo "  $repo_root/reports/jtest/ut-final/coverage.xml" >&2
         exit 1
     fi
 fi

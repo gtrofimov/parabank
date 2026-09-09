@@ -22,12 +22,17 @@ name: Full Baseline Quality
       health_resource:
         description: SOAtest health resource
         required: true
-        default: /TestAssets/generated_by_mcp/Loan_History_Health_Check.tst
+        default: /TestAssets/generated_by_mcp/PGT-15_Parabank_REST_API_Health_Checks.tst
         type: string
       api_resources:
         description: Newline-separated SOAtest API resources
         required: true
-        default: /TestAssets/generated_by_mcp/Loan_Request_History_API.tst
+        default: |
+          /TestAssets/generated_by_mcp/PGT-11_Request_Loan_Flow_API_Tests.tst
+          /TestAssets/generated_by_mcp/PGT-16_Withdraw_Flow_API_Tests.tst
+          /TestAssets/generated_by_mcp/PGT-10_Open_New_Account_API_Tests.tst
+          /TestAssets/generated_by_mcp/PGT-9_Bill_Pay_Flow_API_Tests.tst
+          /TestAssets/generated_by_mcp/PGT-7_Transfer_Funds_API_Tests.tst
         type: string
 
 permissions:
@@ -68,7 +73,6 @@ jobs:
           name: full-baseline-quality-evidence
           path: |
             reports/
-            report/
             target/jtest/baseline/
             .orchestration/
             full_baseline_quality.txt

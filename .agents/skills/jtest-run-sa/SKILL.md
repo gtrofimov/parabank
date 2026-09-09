@@ -44,7 +44,7 @@ coverage:
 
 ```bash
 .agents/skills/workflow-config/scripts/publish-jtest.sh \
-   sa "builtin://CWE Top 25 + On the Cusp 2025" report/sa-final target/jtest/jtest.data.json
+   sa "builtin://CWE Top 25 + On the Cusp 2025" reports/jtest/sa-final target/jtest/jtest.data.json
 ```
 
 ## Reporting
