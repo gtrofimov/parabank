@@ -69,6 +69,10 @@ Exit when the task list is approved.
   first (including test doubles under `src/test/java`) — an interface change
   that only updates the production implementation will break compilation of
   mock/in-memory implementers used by unrelated tests
+- use scoped/targeted test runs only during implementation (compile,
+  test-compile, `-Dtest=<ChangedClasses>`); do not run the full unit-test
+  suite or the full SOAtest scenario set mid-implementation — defer both to
+  the single final regression gate in Phase 4
 
 Exit when the implementation is complete and the task artifacts are ready for validation.
 

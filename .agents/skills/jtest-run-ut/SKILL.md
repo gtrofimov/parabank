@@ -116,6 +116,14 @@ Provide:
 - `jtestcli` completed with `builtin://Unit Tests`.
 - requested scope is reflected in `-Dtest` and/or `-include`/`-exclude`.
 - for complete-run UT phase (all tests), `target/jtest/baseline/report.xml` and `target/jtest/baseline/coverage.xml` were updated when generated, and missing artifacts were reported.
+- check the jtestcli console summary line `Executed test cases: N`. If `N` is
+  `0` while Maven Surefire reported passing tests, Jtest did NOT capture live
+  per-test results (look for "unable to obtain test results" / "executed
+  without the Jtest agent" in the output) — do not report this as a clean UT
+  result. DTP's Unit Tests widget will show "No data available" in this case
+  even though coverage.xml still published successfully. Report this
+  explicitly as a gap requiring `jtest:agent`/`jtestcli.properties`
+  investigation, not as "0 failures."
 
 ## Decision Rules
 - If scope is ambiguous, ask one clarifier: class, method, package, or all tests.
