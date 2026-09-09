@@ -1,5 +1,4 @@
 name: Jira Feature Intake
-
 on:
   workflow_dispatch:
     inputs:

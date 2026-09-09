@@ -1,6 +1,6 @@
 name: Full Baseline Quality
 
-"on":
+on:
   workflow_dispatch:
     inputs:
       run_kind:
