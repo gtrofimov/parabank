@@ -62,9 +62,9 @@ This builds the Basic-auth header from `ROVO_EMAIL:ROVO_TOKEN` and registers
 `jira-remote-cicd` against `https://mcp.atlassian.com/v1/mcp`, matching the
 pattern used by the sibling `VirtualizeMCPDemo` repo's `create-virtual-service.sh`.
 
-Use the Atlassian MCP `getJiraIssue` tool directly with fixed `cloudId: parasoft-demo.atlassian.net` and `issueIdOrKey: <ISSUE-KEY>` to fetch `summary`, `description`, `issuetype`, `priority`, `labels`, and `components`.
+Use the Atlassian MCP tools (`jira-remote-cicd`) with fixed `cloudId: parasoft-demo.atlassian.net` to fetch Jira issue `<ISSUE-KEY>` (`summary`, `description`, `issuetype`, `priority`, `labels`, `components`).
 
-Do NOT use Teamwork Graph (TWG) tools or search tools. Do not paraphrase away required detail — carry acceptance criteria and any explicit constraints verbatim into the generated feature prompt.
+Do not paraphrase away required detail — carry acceptance criteria and any explicit constraints verbatim into the generated feature prompt.
 
 ### 4. Observe — set up the feature branch
 

@@ -2,7 +2,7 @@ Read `.agents/skills/jira-feature-intake/SKILL.md` IN FULL before taking any oth
 
 STRICT GUARDRAILS:
 1. You have one MCP server registered for this run: jira-remote-cicd.
-2. Use jira-remote-cicd MCP tool `getJiraIssue` with `cloudId: parasoft-demo.atlassian.net` and `issueIdOrKey: ${JIRA_TICKET}` to fetch the Jira issue. Do not use Teamwork Graph or search tools.
+2. Use jira-remote-cicd MCP tools (with cloudId parasoft-demo.atlassian.net) to fetch Jira issue ${JIRA_TICKET}.
 3. If jira-remote-cicd MCP tools are not available, output exactly: MCP_ERROR: jira-remote-cicd MCP tools not available
 4. Do not use shell commands, curl, python, or direct REST calls to perform Jira operations.
 5. Do not implement the feature. This run owns only the observe/define phase:
