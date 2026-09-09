@@ -35,6 +35,7 @@ jtestcli -data "$data_file" \
     -property "report.coverage.static.images=$DTP_SOATEST_COVERAGE_IMAGES" \
     -property 'report.associations=true' \
     -property 'report.scontrol=full' \
+    -property 'report.dtp.publish.src=full' \
     -property 'scope.local=true' \
     -property 'scope.xmlmap=false' \
     -property "dtp.url=$DTP_URL" \
