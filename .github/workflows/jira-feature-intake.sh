@@ -33,7 +33,7 @@ rm -f "$RUN_OUT"
 set +e
 (
     cd "$REPO_ROOT"
-    timeout 900 copilot --allow-all --no-ask-user -p "$PROMPT" < /dev/null | tee "$RUN_OUT"
+    timeout 2700 copilot --allow-all --no-ask-user -p "$PROMPT" < /dev/null | tee "$RUN_OUT"
 )
 run_exit=${PIPESTATUS[0]}
 set -e
@@ -43,13 +43,13 @@ if grep -q "^MCP_ERROR:" "$RUN_OUT" 2>/dev/null; then
     die "Agent reported MCP tool unavailability"
 fi
 if [[ $run_exit -eq 124 ]]; then
-    die "Jira feature intake timed out after 900s"
+    die "Jira feature intake timed out after 2700s"
 fi
 if [[ $run_exit -ne 0 ]]; then
     die "Jira feature intake failed with exit code $run_exit"
 fi
 
-for field in JIRA_ISSUE BRANCH BUILD_ID FEATURE_PROMPT TEST_PLAN; do
+for field in JIRA_ISSUE BRANCH BUILD_ID FEATURE_PROMPT TEST_PLAN PR_URL; do
     grep -Eq "^\`?${field}=[^\`]+\`?[[:space:]]*\$" "$RUN_OUT" || {
         tail -40 "$RUN_OUT" || true
         die "Missing ${field} in jira_feature_intake.txt"

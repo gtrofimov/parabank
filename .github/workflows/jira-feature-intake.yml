@@ -9,12 +9,13 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   jira-feature-intake:
-    name: Read Jira Story -> Branch + Build ID + Feature Instances
+    name: Jira Feature Delivery (Story -> Code + Tests + PR)
     runs-on: self-hosted
-    timeout-minutes: 20
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -22,9 +23,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Jira feature intake
+      - name: Run Jira feature delivery
         env:
           COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GH_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
           ROVO_EMAIL: "${{ secrets.ROVO_EMAIL }}"
           ROVO_TOKEN: "${{ secrets.ROVO_TOKEN }}"
           JIRA_TICKET: "${{ inputs.jira_ticket }}"
