@@ -35,6 +35,11 @@ Do not duplicate config-path logic in skill docs or scripts.
 Published Jtest runs must use `scripts/publish-jtest.sh`. Do not call
 `jtestcli -publish` directly from another skill or legacy script.
 
+`publish-jtest.sh` requires its report directory to not exist or be empty.
+Pass a fresh directory name distinct from any earlier scoped/analysis-only
+`jtestcli` report for the same run (e.g. `reports/jtest/sa-final`,
+`reports/jtest/ut-final`) rather than reusing one already populated.
+
 ## Safe Fallback Policy
 
 Use safe fallback defaults only for local-safe values with a standard repo default:

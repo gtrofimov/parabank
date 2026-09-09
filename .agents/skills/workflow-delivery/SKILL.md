@@ -65,6 +65,10 @@ Exit when the task list is approved.
 - keep work scoped to the requested feature
 - do not mix unrelated fixes or cleanup unless required by the feature
 - update tests and docs with the feature change
+- when adding a method to an interface, check every concrete implementer
+  first (including test doubles under `src/test/java`) — an interface change
+  that only updates the production implementation will break compilation of
+  mock/in-memory implementers used by unrelated tests
 
 Exit when the implementation is complete and the task artifacts are ready for validation.
 
@@ -83,6 +87,11 @@ Load `jtest-build` first when a Jtest data artifact is missing or stale. Load
 `jtest-create-ut` only when test generation is explicitly requested. Load
 `virtualize-stateful-virtual-service-creator` only for stateful service work,
 and load `soavirt-upload` only for SOAVirt file staging.
+
+Before exiting this phase, run the full regression suite once
+(`jtest-run-ut` with no scope filter) even if scoped/targeted test runs
+already passed during implementation — a scoped run does not prove the rest
+of the suite still passes after all commits in the branch.
 
 Exit when all required gates have evidence attached.
 

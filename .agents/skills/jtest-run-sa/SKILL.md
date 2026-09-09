@@ -38,6 +38,19 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://CWE Top 25 + On t
    - include all CRITICAL and HIGH severity findings
    - if no CRITICAL/HIGH findings exist, include the top 5 findings by rule frequency
 
+When scope is a whole changed file (not just a new method), the report will
+include every pre-existing violation in that file too. Isolate NEW violations
+by comparing line numbers against the new/changed method's line range — do
+not judge regressions by the total violation count alone.
+
+`parasoft-suppress <RULE> "reason"` comments in this project are
+documentation-only by default (verified: a jtestcli run reports `Suppressed
+violations: 0` even against the existing precedent in
+`JdbcLoanRequestDao.java`). Adding one records rationale but does not remove
+the violation from the report or count. When a new finding matches an
+existing unsuppressed pattern elsewhere in the same file, cite that as the
+acceptance argument — do not rely on the comment alone to justify it.
+
 For a DTP-published final report, publish on the first Jtest execution. Do not
 rerun analysis only to publish. Use the same build ID as UT and application
 coverage:

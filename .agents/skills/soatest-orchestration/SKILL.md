@@ -43,6 +43,12 @@ authoring.
 Use `-publish` only when DTP publication is requested. Credentials come from
 `config/.env` or CI secrets.
 
+JSON/XML response assertions are compared as exact strings, not numeric
+values — a response of `1000.00` fails an assertion authored as `1000.0`.
+Before authoring an assertion or extraction value, pull a real sample from a
+live request against the running app (curl or `describeTest`) rather than
+hand-formatting the expected value.
+
 ## Monitored API Coverage
 
 Keep monitor deployment, application lifecycle, SOAtest execution, and
