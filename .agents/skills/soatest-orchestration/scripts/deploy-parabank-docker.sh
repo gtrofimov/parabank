@@ -39,10 +39,27 @@ cp -f "$war_file" target/parabank.war
 "${compose[@]}" up -d --build --remove-orphans
 
 echo "Waiting for ParaBank to become healthy on port ${PARABANK_SERVLET_PORT}..."
-curl -fsS --retry 30 --retry-connrefused --max-time 5 \
-    "http://localhost:${PARABANK_SERVLET_PORT}/parabank/" >/dev/null
 
-curl -fsS --retry 10 --retry-connrefused --max-time 5 \
-    "http://localhost:${JTEST_AGENT_REST_PORT}/status" >/dev/null
+wait_for_http() {
+    local url="$1"
+    local deadline="$2"
+    local remaining
+
+    while (( SECONDS < deadline )); do
+        remaining=$((deadline - SECONDS))
+        if curl -fsS --max-time "$((remaining < 3 ? remaining : 3))" \
+            "$url" >/dev/null 2>&1; then
+            return 0
+        fi
+        sleep 1
+    done
+
+    echo "Readiness timeout after 40 seconds: $url" >&2
+    return 1
+}
+
+startup_deadline=$((SECONDS + 40))
+wait_for_http "http://localhost:${PARABANK_SERVLET_PORT}/parabank/" "$startup_deadline"
+wait_for_http "http://localhost:${JTEST_AGENT_REST_PORT}/status" "$startup_deadline"
 
 echo "ParaBank is up on ${PARABANK_SERVLET_PORT}; Jtest monitor agent REST is up on ${JTEST_AGENT_REST_PORT}."
