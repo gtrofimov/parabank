@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-RUN_OUT="$REPO_ROOT/jira_feature_intake.txt"
+RUN_OUT="/tmp/jira_feature_intake.txt"
 
 ts() {
     echo "[$(date '+%H:%M:%S')] $*"
@@ -60,5 +60,7 @@ branch="$(grep -E '^`?BRANCH=' "$RUN_OUT" | tail -1 | sed -E 's/^`?BRANCH=//; s/
 git -C "$REPO_ROOT" ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1 || {
     die "Branch ${branch} was not found on origin after the run"
 }
+
+cp "$RUN_OUT" "$REPO_ROOT/jira_feature_intake.txt" || true
 
 ts "Jira feature intake complete: branch=${branch}"

@@ -3,6 +3,7 @@
 /target/
 hs_err_*.log
 *.log
+jira_feature_intake.txt
 
 # Parasoft-specific:
 .parasoft
