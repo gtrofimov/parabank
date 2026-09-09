@@ -319,6 +319,31 @@ public class BankManagerImplTest extends AbstractParaBankTest {
     }
 
     @Test
+    public void testGetHighValueTransactionsForAccount() {
+        final Transaction lowValue = new Transaction();
+        lowValue.setAccountId(ACCOUNT3_ID);
+        lowValue.setType(TransactionType.Debit);
+        lowValue.setDate(Calendar.getInstance().getTime());
+        lowValue.setAmount(new BigDecimal("50.00"));
+        lowValue.setDescription("Low value");
+        transactionDao.createTransaction(lowValue);
+
+        final Transaction highValue = new Transaction();
+        highValue.setAccountId(ACCOUNT3_ID);
+        highValue.setType(TransactionType.Credit);
+        highValue.setDate(Calendar.getInstance().getTime());
+        highValue.setAmount(new BigDecimal("1500.00"));
+        highValue.setDescription("High value");
+        transactionDao.createTransaction(highValue);
+
+        final List<Transaction> result =
+            bankManager.getHighValueTransactionsForAccount(ACCOUNT3_ID, new BigDecimal("1000.00"));
+
+        assertEquals(1, result.size());
+        assertEquals(0, new BigDecimal("1500.00").compareTo(result.get(0).getAmount()));
+    }
+
+    @Test
     public void testCreatePosition() {
         final Position position = bankManager.createPosition(CUSTOMER_ID, NAME, SYMBOL, SHARES, PRICEPERSHARE);
         assertNotNull(position);

@@ -235,4 +235,41 @@ public class JdbcTransactionDaoTest extends AbstractParaBankDataSourceTest {
         transactions = transactionDao.getTransactionsForAccount(12345, criteria);
         assertEquals(1, transactions.size());
     }
+
+    @Test
+    @Rollback
+    public void testGetHighValueTransactionsForAccount() {
+        final Transaction lower = new Transaction();
+        lower.setAccountId(ACCOUNT_ID);
+        lower.setType(TYPE);
+        lower.setDate(new Date(convertDate("2020-01-01").getTime()));
+        lower.setAmount(new BigDecimal("100.00"));
+        lower.setDescription("low value");
+        transactionDao.createTransaction(lower);
+
+        final Transaction higher = new Transaction();
+        higher.setAccountId(ACCOUNT_ID);
+        higher.setType(TYPE);
+        higher.setDate(new Date(convertDate("2020-02-01").getTime()));
+        higher.setAmount(new BigDecimal("500.00"));
+        higher.setDescription("high value");
+        transactionDao.createTransaction(higher);
+
+        List<Transaction> transactions =
+            transactionDao.getHighValueTransactionsForAccount(ACCOUNT_ID, new BigDecimal("100.00"));
+        assertEquals(2, transactions.size());
+        // ordered most recent first
+        assertEquals(higher.getId(), transactions.get(0).getId());
+        assertEquals(lower.getId(), transactions.get(1).getId());
+
+        transactions = transactionDao.getHighValueTransactionsForAccount(ACCOUNT_ID, new BigDecimal("500.00"));
+        assertEquals(1, transactions.size());
+        assertEquals(higher.getId(), transactions.get(0).getId());
+
+        transactions = transactionDao.getHighValueTransactionsForAccount(ACCOUNT_ID, new BigDecimal("501.00"));
+        assertEquals(0, transactions.size());
+
+        transactions = transactionDao.getHighValueTransactionsForAccount(-1, new BigDecimal("0.00"));
+        assertEquals(0, transactions.size());
+    }
 }

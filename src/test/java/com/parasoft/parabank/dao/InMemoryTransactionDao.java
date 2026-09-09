@@ -1,6 +1,8 @@
 package com.parasoft.parabank.dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.parasoft.parabank.domain.Transaction;
@@ -63,5 +65,22 @@ public class InMemoryTransactionDao implements TransactionDao {
         transaction.setId(++ID);
         transactions.add(transaction);
         return ID;
+    }
+
+    @Override
+    public List<Transaction> getHighValueTransactionsForAccount(int accountId, BigDecimal threshold) {
+        List<Transaction> matches = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAccountId() == accountId && transaction.getAmount() != null
+                    && transaction.getAmount().compareTo(threshold) >= 0) {
+                matches.add(transaction);
+            }
+        }
+
+        matches.sort(Comparator.comparing(Transaction::getDate).reversed()
+                .thenComparing(Comparator.comparingInt(Transaction::getId).reversed()));
+
+        return matches;
     }
 }

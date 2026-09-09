@@ -1,5 +1,6 @@
 package com.parasoft.parabank.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.parasoft.parabank.domain.Transaction;
@@ -34,6 +35,15 @@ public interface TransactionDao {
      * @return list of matching transactions for the given account
      */
     List<Transaction> getTransactionsForAccount(int accountId, TransactionCriteria criteria);
+
+    /**
+     * Retrieve transactions for a given account with an amount at or above the given threshold
+     *
+     * @param accountId the account id to lookup
+     * @param threshold the minimum transaction amount (inclusive) to match
+     * @return list of matching transactions for the given account, ordered most recent first
+     */
+    List<Transaction> getHighValueTransactionsForAccount(int accountId, BigDecimal threshold);
 
     /**
      * Add a new transaction to the data source

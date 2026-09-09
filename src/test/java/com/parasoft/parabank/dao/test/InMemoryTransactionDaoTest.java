@@ -80,4 +80,14 @@ public class InMemoryTransactionDaoTest extends AbstractParaBankTest {
         transactions = transactionDao.getTransactionsForAccount(-1, new TransactionCriteria());
         assertEquals(0, transactions.size());
     }
+
+    @Test
+    public void testGetHighValueTransactionsForAccount() {
+        List<Transaction> transactions =
+            transactionDao.getHighValueTransactionsForAccount(ACCOUNT_ID, new java.math.BigDecimal("0.00"));
+        assertEquals(0, transactions.size());
+
+        transactions = transactionDao.getHighValueTransactionsForAccount(-1, new java.math.BigDecimal("0.00"));
+        assertEquals(0, transactions.size());
+    }
 }
