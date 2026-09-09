@@ -95,6 +95,17 @@ mvn compile jtest:jtest -Djtest.skip=true
 mvn test-compile jtest:agent test jtest:jtest -Djtest.skip=true -Dmaven.test.failure.ignore=true
 ```
 
+If SA needs a rebuild AFTER the UT (`mvn test-compile jtest:agent test
+jtest:jtest`) command already ran in this session (e.g. a source fix following
+an SA finding), do not run the SA-only `mvn compile jtest:jtest` refresh
+afterward on its own — it regenerates `jtest.data.json` and silently orphans
+the live test-session linkage to `target/jtest/unit_test_data/`, causing every
+subsequent `jtestcli -config "builtin://Unit Tests"` run (including publish)
+to report `Executed test cases: 0` even though Maven itself ran and passed
+tests. Rerun the full UT command (`mvn test-compile jtest:agent test
+jtest:jtest`) again afterward, as the LAST data refresh before any UT
+analysis or publish step.
+
 ## Handoff
 
 - After `sa` or `both`, continue with `jtest-run-sa`.
