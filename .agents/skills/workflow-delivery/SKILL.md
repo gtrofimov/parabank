@@ -40,7 +40,10 @@ Before implementation begins, ensure the following exist:
 
 ### Phase 1: Define
 
-- capture feature intent in a feature prompt
+- when the requirement originates from Jira (e.g. a PGT issue), load
+  `jira-feature-intake` first to get the baseline state, feature branch, build
+  ID, and generated feature-prompt/test-plan instances
+- otherwise capture feature intent directly in a feature prompt
 - state scope, non-goals, API/data impact, risks, and success criteria
 - generate a test-plan from the feature template
 - confirm delivery gates and evidence expectations
@@ -87,8 +90,14 @@ Exit when all required gates have evidence attached.
 
 - ensure the feature branch is clean, scoped, and documented
 - confirm required reports and thresholds are captured
+- generate an accountability report from
+  `.agents/templates/accountability-report-template.md`, linking the Jira
+  issue, branch, build ID, and every evidence artifact from Phase 4
 - prepare the final summary for review or deployment
-- do not push or publish without approval
+- on approval, create the PR (vendor PR-creation skill) and post the
+  accountability report summary plus PR link back to the Jira issue
+- do not push, publish, create a PR, or transition the Jira issue without
+  approval
 
 ## Hard Rules
 
@@ -98,7 +107,7 @@ Exit when all required gates have evidence attached.
 - Use repository-owned templates and config instead of local ad hoc files.
 - Require evidence before claiming the feature is complete.
 - Publish Jtest reports on first execution; never rerun tests only to publish.
-- Never push or create a PR without approval.
+- Never push, create a PR, or transition/comment on a Jira issue without approval.
 
 ## Skill Loading
 
@@ -119,6 +128,9 @@ Exit when all required gates have evidence attached.
 - Jtest installation settings and licensing: `$JTEST_HOME/jtestcli.properties`
 - project-specific Jtest settings: command-line properties
 - shared config/build-ID utility: `.agents/skills/workflow-config/`
+- Jira requirement intake: `.agents/skills/jira-feature-intake/`
+- generated feature/test-plan instances: `.agents/instances/<ISSUE-KEY>/`
+- accountability report template: `.agents/templates/accountability-report-template.md`
 
 Skills that need runtime config or a build identity use the shared utility. Do
 not invent alternative config paths.
@@ -127,7 +139,8 @@ not invent alternative config paths.
 
 At the end of a delivery cycle, the feature branch should have:
 
-- a feature prompt or generated feature instance
+- a feature prompt or generated feature instance (with Jira issue link, if any)
+- an accountability report tying evidence to the build ID and Jira issue
 - a test plan
 - implementation changes
 - validation evidence

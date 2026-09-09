@@ -61,3 +61,7 @@ eval "$(.agents/skills/workflow-config/scripts/resolve-build-id.sh)"
 ```
 
 Precedence: explicit `JTEST_BUILD_ID`, CI `BUILD_NUMBER`, or local UTC date.
+
+Set `JIRA_ISSUE_KEY` to link a derived build ID (the `BUILD_NUMBER` or local-date
+cases) to a PGT issue, e.g. `Parabank-Jenkins-42-PGT-123`. An explicit
+`JTEST_BUILD_ID` always wins untouched. Used by `jira-feature-intake`.
