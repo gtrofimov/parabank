@@ -88,10 +88,16 @@ Load `jtest-build` first when a Jtest data artifact is missing or stale. Load
 `virtualize-stateful-virtual-service-creator` only for stateful service work,
 and load `soavirt-upload` only for SOAVirt file staging.
 
-Before exiting this phase, run the full regression suite once
-(`jtest-run-ut` with no scope filter) even if scoped/targeted test runs
-already passed during implementation — a scoped run does not prove the rest
-of the suite still passes after all commits in the branch.
+Before exiting this phase, run full regression once, even if scoped/targeted
+runs already passed during implementation — a scoped run does not prove the
+rest of the suite still passes after all commits in the branch:
+- `jtest-run-ut` with no scope filter (unit tests)
+- all existing SOAtest scenarios for the affected app, run individually per
+  scenario rather than batched into one `soatestcli` call — batching
+  unrelated scenarios together can surface cross-scenario extraction-variable
+  interaction failures that are not real regressions. Verify any failure with
+  an isolated single-scenario rerun before treating it as a regression caused
+  by this branch.
 
 Exit when all required gates have evidence attached.
 
