@@ -47,3 +47,4 @@ config/.env
 
 # IntelliJ
 out/
+command-reference.md
