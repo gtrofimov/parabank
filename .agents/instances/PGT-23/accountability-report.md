@@ -41,7 +41,7 @@ quality gate together.
 
 ## Pull Request
 
-- PR link: (added after `gh pr create` — see final response metadata block)
+- PR link: https://github.com/gtrofimov/parabank/pull/3
 - Reviewers requested: none specified in the issue; default repository reviewers apply.
 
 ## Jira Hand-off
