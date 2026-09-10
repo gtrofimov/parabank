@@ -441,4 +441,16 @@ public class BankManagerImplTest extends AbstractParaBankTest {
         assertEquals(AMOUNT2.floatValue(), transaction.getAmount().floatValue(), 0.0001f);
         assertEquals(TRANSACTION_MESSAGE, transaction.getDescription());
     }
+
+    @Test
+    public void testGetHighValueTransactionsForAccount() {
+        bankManager.deposit(ACCOUNT1_ID, new BigDecimal(500), TRANSACTION_MESSAGE);
+        bankManager.deposit(ACCOUNT1_ID, new BigDecimal(1500), TRANSACTION_MESSAGE);
+
+        final List<Transaction> transactions =
+            bankManager.getHighValueTransactionsForAccount(ACCOUNT1_ID, new BigDecimal(1000));
+
+        assertEquals(1, transactions.size());
+        assertEquals(new BigDecimal(1500).floatValue(), transactions.get(0).getAmount().floatValue(), 0.0001f);
+    }
 }

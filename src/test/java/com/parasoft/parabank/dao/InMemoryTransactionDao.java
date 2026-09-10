@@ -1,5 +1,6 @@
 package com.parasoft.parabank.dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +64,19 @@ public class InMemoryTransactionDao implements TransactionDao {
         transaction.setId(++ID);
         transactions.add(transaction);
         return ID;
+    }
+
+    @Override
+    public List<Transaction> getHighValueTransactionsForAccount(int accountId, BigDecimal threshold) {
+        List<Transaction> accountTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            if (transaction.getAccountId() == accountId && transaction.getAmount() != null
+                    && transaction.getAmount().compareTo(threshold) >= 0) {
+                accountTransactions.add(transaction);
+            }
+        }
+
+        return accountTransactions;
     }
 }
