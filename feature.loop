@@ -1,0 +1,29 @@
+I want to use a CICD workflow to read a requirement for a new feature in my PGT jira project.
+Then the CICD orchestration implements it as defined by my templates.
+
+observe
+- get current baseline states
+- review templates
+- set up new feature branch
+- set up new build id
+
+plan / define
+- write feature and test plans as described templates
+
+act / execute
+- write cwe compliant java code (jtest + publish)
+- generate unit tests for new code only (jtest + publish)
+- generate API test scernios to tets new feature (soatest mcp)
+
+test
+- deploy app with code coverage (docker)
+- run generated API test (soatest + coverage + publish)
+
+verify
+- fix bugs or tests
+- generate accountability report
+- create PR
+
+Now:
+1. lets start by review existing workflows and repo contents to see what all is missing and still needs to be added to the repo/workflow
+2. next letswork on writing the requirement in a way that the cicd pipeline can one-shot this task

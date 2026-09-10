@@ -1,6 +1,9 @@
 # Copilot MCP Tool Usage Policy
 
 When using MCP tools in this repository, call them sequentially.
+## MOST Important Guidelines
+- never pass secrets or passwords or local vars into inference.
+- Never use em-dashes; stick to standard hyphens for consistency.
 
 ## Skill and template location
 - Store repository-owned custom agent skills in `.agents/skills/<skill-name>/SKILL.md`.
