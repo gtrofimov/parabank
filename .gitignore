@@ -38,7 +38,7 @@ jtest-ft-cov/
 .vscode
 *.env
 !.env.example
-
+command-reference.md
 # Gradle:
 **/.idea/**/gradle.xml
 **/.idea/**/libraries/
