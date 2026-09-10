@@ -26,6 +26,20 @@ done
 ts "Registering Jira MCP server..."
 "$REPO_ROOT/.agents/skills/jira-feature-intake/scripts/register-jira-mcp.sh"
 
+if [[ -n "${SOATEST_MCP_AUTH_TOKEN:-}" ]]; then
+    ts "Registering SOAtest MCP server..."
+    # shellcheck source=/dev/null
+    source "$REPO_ROOT/.agents/skills/workflow-config/scripts/load-orchestration-config.sh"
+    SOATEST_URL="${SOATEST_URL:-$SOATEST_SERVER}"
+    SOATEST_MCP_URL="${SOATEST_URL%/}/soavirt/mcp"
+    copilot mcp remove soatest-cicd >/dev/null 2>&1 || true
+    copilot mcp add \
+        --transport http \
+        --header "Authorization: Basic ${SOATEST_MCP_AUTH_TOKEN}" \
+        soatest-cicd \
+        "$SOATEST_MCP_URL" || true
+fi
+
 ts "Running Jira feature intake for ${JIRA_TICKET}..."
 PROMPT=$(JIRA_TICKET="${JIRA_TICKET}" envsubst < "$SCRIPT_DIR/jira-feature-intake-prompt.md")
 rm -f "$RUN_OUT"

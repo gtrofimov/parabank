@@ -30,6 +30,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
           ROVO_EMAIL: "${{ secrets.ROVO_EMAIL }}"
           ROVO_TOKEN: "${{ secrets.ROVO_TOKEN }}"
+          SOATEST_MCP_AUTH_TOKEN: "${{ secrets.SOATEST_MCP_AUTH_TOKEN }}"
           DTP_URL: "${{ secrets.DTP_URL }}"
           DTP_USER: "${{ secrets.DTP_USER }}"
           DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
