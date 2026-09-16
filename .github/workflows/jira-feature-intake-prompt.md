@@ -5,9 +5,12 @@ STRICT GUARDRAILS:
 2. Use jira-remote-cicd MCP tools (with cloudId parasoft-demo.atlassian.net) to fetch Jira issue ${JIRA_TICKET}.
 3. If jira-remote-cicd MCP tools are not available, output exactly: MCP_ERROR: jira-remote-cicd MCP tools not available
 4. Execute full end-to-end feature delivery for ${JIRA_TICKET} following `.agents/skills/workflow-delivery/SKILL.md`:
+   - Read `feature.loop` before planning implementation. Treat its phases as
+     required delivery steps, in order.
    - Phase 1 (Observe/Define): Fetch story, create/switch branch `feature/${JIRA_TICKET}-<slug>`, resolve build ID, and generate `.agents/instances/${JIRA_TICKET}/feature-prompt.md` and `test-plan.md`.
-   - Phase 2 (Plan) & Phase 3 (Implement): Implement all code, unit tests, and SOAtest scenario changes required by the story.
-   - Phase 4 (Validate): Execute static analysis (`jtest-run-sa`), unit tests (`jtest-run-ut`), SOAtest functional tests (`soatest-orchestration`), and coverage analysis (`jtest-cov-analysis`). DTP credentials (`DTP_URL`, `DTP_USER`, `DTP_PASSWORD`) are present in environment; publish reports to DTP during SA, UT, and SOAtest steps.
+   - Phase 2 (Plan) & Phase 3 (Implement): Implement all code and unit tests required by the story. When `feature.loop` requires an API prototype, create a **stateless** virtual service through the SOAVirt MCP server. Use this asset only as a prototype backend for verifying generated API tests. Generate SOAtest scenarios through SOAtest MCP tools. Do not use the stateful virtual-service creator unless Jira explicitly requires state.
+   - Phase 4 (Validate): Execute static analysis (`jtest-run-sa`), unit tests (`jtest-run-ut`), SOAtest functional tests (`soatest-orchestration`), and coverage analysis (`jtest-cov-analysis`). For application deployment, Docker is mandatory: run `.agents/skills/soatest-orchestration/scripts/deploy-parabank-docker.sh` and use the Docker-based coverage flow. Do not deploy with Maven Cargo, embedded Tomcat, host-side Tomcat, Jetty, `cargo:start`, or `cargo:run`. If Docker is unavailable, fail with `MCP_ERROR: Docker deployment required but Docker is unavailable`; do not select a fallback.
+   - DTP credentials (`DTP_URL`, `DTP_USER`, `DTP_PASSWORD`) are present in environment; publish reports to DTP during SA, UT, and SOAtest steps.
    - Phase 5 (Release & PR): Create accountability report (`.agents/instances/${JIRA_TICKET}/accountability-report.md`), commit all changes, push branch to origin, and create a Pull Request against `master` using `gh pr create`.
 5. MAX OPTIMIZATION, EXECUTION SPEED & TOKEN CONSERVATION:
    - Combine shell commands with `&&` into compound turns to minimize tool round-trips.
