@@ -39,7 +39,7 @@ Generated during Phase 5 (Release / Hand-off), after all validation evidence exi
 
 ## Pull Request
 
-- PR link: (added after `gh pr create`, see final response)
+- PR link: https://github.com/gtrofimov/parabank/pull/4
 - Reviewers requested: none specified
 
 ## Jira Hand-off
