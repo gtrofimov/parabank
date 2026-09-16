@@ -11,9 +11,11 @@ plan / define
 - write feature and test plans as described templates
 
 act / execute
+- create a stateless virtual service prototype of the API, used only to verify the generated API tests
+- generate API test scenarios to tets new feature (soatest mcp)
+
 - write cwe compliant java code (jtest + publish)
 - generate unit tests for new code only (jtest + publish)
-- generate API test scernios to tets new feature (soatest mcp)
 
 test
 - deploy app with code coverage (docker)
@@ -23,7 +25,3 @@ verify
 - fix bugs or tests
 - generate accountability report
 - create PR
-
-Now:
-1. lets start by review existing workflows and repo contents to see what all is missing and still needs to be added to the repo/workflow
-2. next letswork on writing the requirement in a way that the cicd pipeline can one-shot this task

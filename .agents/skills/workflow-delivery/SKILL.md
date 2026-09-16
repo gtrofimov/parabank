@@ -65,6 +65,10 @@ Exit when the task list is approved.
 - keep work scoped to the requested feature
 - do not mix unrelated fixes or cleanup unless required by the feature
 - update tests and docs with the feature change
+- when the feature loop requires an API prototype, create the stateless
+  virtual service asset through the SOAVirt MCP server; use it only as a
+  prototype backend for verifying generated API tests
+- author the generated API test scenarios through the SOAtest MCP tools
 - when adding a method to an interface, check every concrete implementer
   first (including test doubles under `src/test/java`) — an interface change
   that only updates the production implementation will break compilation of
@@ -89,8 +93,9 @@ matching skill:
 
 Load `jtest-build` first when a Jtest data artifact is missing or stale. Load
 `jtest-create-ut` only when test generation is explicitly requested. Load
-`virtualize-stateful-virtual-service-creator` only for stateful service work,
-and load `soavirt-upload` only for SOAVirt file staging.
+the SOAVirt MCP server for stateless virtual-service prototypes and load
+`virtualize-stateful-virtual-service-creator` only for stateful service work.
+Load `soavirt-upload` only for SOAVirt file staging.
 
 Before exiting this phase, run full regression once, even if scoped/targeted
 runs already passed during implementation — a scoped run does not prove the
