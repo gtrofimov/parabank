@@ -23,19 +23,59 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Jira feature delivery
+      - name: Register MCP servers
+        env:
+          ROVO_EMAIL: "${{ secrets.ROVO_EMAIL }}"
+          ROVO_TOKEN: "${{ secrets.ROVO_TOKEN }}"
+          SOATEST_MCP_AUTH_TOKEN: "${{ secrets.SOATEST_MCP_AUTH_TOKEN }}"
+        run: bash .github/workflows/jira-feature-intake-setup.sh
+
+      - name: 'Observe: Parasoft DTP'
+        env:
+          DTP_URL: "${{ secrets.DTP_URL }}"
+          DTP_USER: "${{ secrets.DTP_USER }}"
+          DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
+        run: |
+          set -euo pipefail
+          JIRA_ISSUE_KEY="${{ inputs.jira_ticket }}" eval "$(.agents/skills/workflow-config/scripts/resolve-build-id.sh)"
+          echo "JTEST_BUILD_ID=${JTEST_BUILD_ID}" >> "$GITHUB_ENV"
+          echo "DTP_PROJECT=${DTP_PROJECT}" >> "$GITHUB_ENV"
+          if [[ -f target/jtest/baseline/coverage.xml ]]; then
+            echo "Baseline coverage snapshot found: target/jtest/baseline/coverage.xml"
+          else
+            echo "No baseline coverage snapshot found; coverage deltas will start fresh."
+          fi
+          echo "Resolved build id: ${JTEST_BUILD_ID}"
+
+      - name: 'Plan: Jira'
         env:
           COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
           GH_TOKEN: "${{ secrets.COPILOT_PAT }}"
           GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
-          ROVO_EMAIL: "${{ secrets.ROVO_EMAIL }}"
-          ROVO_TOKEN: "${{ secrets.ROVO_TOKEN }}"
-          SOATEST_MCP_AUTH_TOKEN: "${{ secrets.SOATEST_MCP_AUTH_TOKEN }}"
+          JIRA_TICKET: "${{ inputs.jira_ticket }}"
+        run: bash .github/workflows/jira-feature-intake.sh plan
+
+      - name: 'Act: Jtest, SOAtest, Virtualize'
+        env:
+          COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GH_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
           DTP_URL: "${{ secrets.DTP_URL }}"
           DTP_USER: "${{ secrets.DTP_USER }}"
           DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
           JIRA_TICKET: "${{ inputs.jira_ticket }}"
-        run: bash .github/workflows/jira-feature-intake.sh
+        run: bash .github/workflows/jira-feature-intake.sh act
+
+      - name: 'Verify: Parasoft DTP'
+        env:
+          COPILOT_GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GH_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          GITHUB_TOKEN: "${{ secrets.COPILOT_PAT }}"
+          DTP_URL: "${{ secrets.DTP_URL }}"
+          DTP_USER: "${{ secrets.DTP_USER }}"
+          DTP_PASSWORD: "${{ secrets.DTP_PASSWORD }}"
+          JIRA_TICKET: "${{ inputs.jira_ticket }}"
+        run: bash .github/workflows/jira-feature-intake.sh verify
 
       - name: Destroy ParaBank Docker deployment
         if: always()
@@ -48,4 +88,7 @@ jobs:
           name: jira-feature-intake-evidence
           path: |
             .agents/instances/
-            jira_feature_intake.txt
+            jira_feature_intake_plan.txt
+            jira_feature_intake_act.txt
+            jira_feature_intake_verify.txt
+

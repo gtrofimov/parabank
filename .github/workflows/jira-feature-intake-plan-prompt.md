@@ -1,31 +1,20 @@
-Read `.agents/skills/jira-feature-intake/SKILL.md` and `.agents/skills/workflow-delivery/SKILL.md` IN FULL before taking any other action.
+Read `.agents/skills/jira-feature-intake/SKILL.md` IN FULL before taking any other action. This is the "Plan: Jira" phase only — it does not implement, validate, or release anything.
 
 STRICT GUARDRAILS:
 1. You have one MCP server registered for this run: jira-remote-cicd.
 2. Use jira-remote-cicd MCP tools (with cloudId parasoft-demo.atlassian.net) to fetch Jira issue ${JIRA_TICKET}.
 3. If jira-remote-cicd MCP tools are not available, output exactly: MCP_ERROR: jira-remote-cicd MCP tools not available
-4. Execute full end-to-end feature delivery for ${JIRA_TICKET} following `.agents/skills/workflow-delivery/SKILL.md`:
-   - Read `feature.loop` before planning implementation. Treat its phases as
-     required delivery steps, in order.
-   - Phase 1 (Observe/Define): Fetch story, create/switch branch `feature/${JIRA_TICKET}-<slug>`, resolve build ID, and generate `.agents/instances/${JIRA_TICKET}/feature-prompt.md` and `test-plan.md`.
-   - Phase 2 (Plan) & Phase 3 (Implement): Implement all code and unit tests required by the story. When `feature.loop` requires an API prototype, create a **stateless** virtual service through the SOAVirt MCP server. Use this asset only as a prototype backend for verifying generated API tests. Generate SOAtest scenarios through SOAtest MCP tools. Do not use the stateful virtual-service creator unless Jira explicitly requires state.
-   - Phase 4 (Validate): Execute static analysis (`jtest-run-sa`), unit tests (`jtest-run-ut`), SOAtest functional tests (`soatest-orchestration`), and coverage analysis (`jtest-cov-analysis`). For application deployment, Docker is mandatory: run `.agents/skills/soatest-orchestration/scripts/deploy-parabank-docker.sh` and use the Docker-based coverage flow. Do not deploy with Maven Cargo, embedded Tomcat, host-side Tomcat, Jetty, `cargo:start`, or `cargo:run`. If Docker is unavailable, fail with `MCP_ERROR: Docker deployment required but Docker is unavailable`; do not select a fallback.
-   - DTP credentials (`DTP_URL`, `DTP_USER`, `DTP_PASSWORD`) are present in environment; publish reports to DTP during SA, UT, and SOAtest steps.
-   - Phase 5 (Release & PR): Create accountability report (`.agents/instances/${JIRA_TICKET}/accountability-report.md`), commit all changes, push branch to origin, and create a Pull Request against `master` using `gh pr create`.
-5. MAX OPTIMIZATION, EXECUTION SPEED & TOKEN CONSERVATION:
-   - Combine shell commands with `&&` into compound turns to minimize tool round-trips.
-   - Truncate long command outputs (`| tail -n 30` or `grep`) to keep context window slim.
-   - DO NOT RE-RUN JTEST OR BUILD COMMANDS: Run `mvn compile jtest:jtest` once to generate `target/jtest/jtest.data.json`, run `jtestcli` for SA once on touched classes, and run `mvn test jtest:jtest` once for UT + coverage. Do not execute comparative or multi-run SA/UT passes.
-   - Run validation linearly: execute each gate once without trial-and-error re-runs or duplicate scenario executions.
-6. Do not invent acceptance criteria or requirements not present in the Jira issue.
-7. On any failure (MCP, build, test, or git), report and stop immediately.
-8. End your final response with these plain-text metadata lines, one per line, no backticks/bullets/tables:
+4. `JTEST_BUILD_ID` is already resolved in the environment (set by the prior "Observe: Parasoft DTP" step). Use it as-is; do not recompute it.
+5. Confirm the working tree is clean, then create/switch to branch `feature/${JIRA_TICKET}-<slug>` using `.agents/skills/jira-feature-intake/scripts/create-feature-branch.sh`.
+6. Generate `.agents/instances/${JIRA_TICKET}/feature-prompt.md` and `test-plan.md` from the canonical templates. Carry acceptance criteria verbatim; mark any value Jira did not specify as `Not specified in issue — confirm before implementation` rather than inventing one.
+7. Do not implement code, run tests, deploy, publish to DTP, commit, push, or create a PR in this phase — those happen in later pipeline steps.
+8. Do not invent acceptance criteria or requirements not present in the Jira issue.
+9. On any failure (MCP, git, or template), report and stop immediately.
+10. End your final response with these plain-text metadata lines, one per line, no backticks/bullets/tables:
 
 JIRA_ISSUE=<issue key>
 BRANCH=<created feature branch name>
-BUILD_ID=<resolved JTEST_BUILD_ID>
 FEATURE_PROMPT=<path to feature-prompt.md>
 TEST_PLAN=<path to test-plan.md>
-PR_URL=<created pull request URL>
 
-Fetch Jira issue ${JIRA_TICKET} and execute full feature delivery + PR creation against it.
+Fetch Jira issue ${JIRA_TICKET} and complete only the Observe (branch/build-id linkage) and Plan/Define (feature prompt + test plan) steps.
