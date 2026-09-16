@@ -292,6 +292,27 @@ public class BankManagerImplTest extends AbstractParaBankTest {
     }
 
     @Test
+    public void testGetHighValueTransactionsForAccount() {
+        final Transaction lowTransaction = new Transaction();
+        lowTransaction.setAccountId(ACCOUNT1_ID);
+        lowTransaction.setType(TransactionType.Debit);
+        lowTransaction.setAmount(new BigDecimal("50.00"));
+        transactionDao.createTransaction(lowTransaction);
+
+        final Transaction highTransaction = new Transaction();
+        highTransaction.setAccountId(ACCOUNT1_ID);
+        highTransaction.setType(TransactionType.Debit);
+        highTransaction.setAmount(new BigDecimal("5000.00"));
+        transactionDao.createTransaction(highTransaction);
+
+        final List<Transaction> transactions =
+            bankManager.getHighValueTransactionsForAccount(ACCOUNT1_ID, new BigDecimal("1000.00"));
+
+        assertEquals(1, transactions.size());
+        assertEquals(highTransaction.getId(), transactions.get(0).getId());
+    }
+
+    @Test
     public void testCreateCustomer() {
         final int id = bankManager.createCustomer(new Customer());
         assertEquals(2, id);
@@ -358,21 +379,6 @@ public class BankManagerImplTest extends AbstractParaBankTest {
         assertEquals(TransactionType.Credit, transaction.getType());
         assertEquals(AMOUNT2.floatValue(), transaction.getAmount().floatValue(), 0.0001f);
         assertEquals(TRANSACTION_MESSAGE, transaction.getDescription());
-    }
-
-    @Test
-    public void testGetHighValueTransactionsForAccount() {
-        final BigDecimal SMALL_AMOUNT = new BigDecimal(50);
-        final BigDecimal LARGE_AMOUNT = new BigDecimal(300);
-
-        bankManager.deposit(ACCOUNT1_ID, SMALL_AMOUNT, TRANSACTION_MESSAGE);
-        bankManager.deposit(ACCOUNT1_ID, LARGE_AMOUNT, TRANSACTION_MESSAGE);
-
-        final List<Transaction> highValue =
-            bankManager.getHighValueTransactionsForAccount(ACCOUNT1_ID, new BigDecimal(100));
-
-        assertEquals(1, highValue.size());
-        assertEquals(LARGE_AMOUNT.floatValue(), highValue.get(0).getAmount().floatValue(), 0.0001f);
     }
 
     @Test

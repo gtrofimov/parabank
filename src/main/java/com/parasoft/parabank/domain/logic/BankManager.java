@@ -198,7 +198,7 @@ public interface BankManager {
 
     /**
      * Retrieve transactions for a given account with an amount at or above the given threshold,
-     * ordered most recent first (transaction date descending, then id descending)
+     * ordered most recent first
      *
      * @param accountId the account id to lookup
      * @param threshold the minimum transaction amount (inclusive) to match

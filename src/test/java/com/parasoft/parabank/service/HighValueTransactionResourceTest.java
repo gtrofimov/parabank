@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import com.parasoft.parabank.domain.logic.BankManager;
 import jakarta.ws.rs.core.Response;
 
 public class HighValueTransactionResourceTest {
-
     @Test
     public void testGetHighValueTransactionsReturnsMatches() {
         final HighValueTransactionResource resource = new HighValueTransactionResource();
@@ -28,62 +26,63 @@ public class HighValueTransactionResourceTest {
         final Transaction transaction = new Transaction();
         transaction.setId(1);
         transaction.setAccountId(12345);
-        transaction.setAmount(new BigDecimal("500.00"));
-        when(bankManager.getHighValueTransactionsForAccount(12345, new BigDecimal("100")))
-            .thenReturn(Arrays.asList(transaction));
+        final List<Transaction> transactions = Collections.singletonList(transaction);
+        when(bankManager.getHighValueTransactionsForAccount(12345, new BigDecimal("1000.00")))
+            .thenReturn(transactions);
         resource.setBankManager(bankManager);
 
-        final Response response = resource.getHighValueTransactions(12345, "100");
+        final Response response = resource.getHighValueTransactions(12345, "1000.00");
+
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        @SuppressWarnings("unchecked")
-        final List<Transaction> body = (List<Transaction>) response.getEntity();
-        assertEquals(1, body.size());
+        assertEquals(transactions, response.getEntity());
     }
 
     @Test
-    public void testGetHighValueTransactionsReturnsEmptyArray() {
+    public void testGetHighValueTransactionsReturnsEmptyList() {
         final HighValueTransactionResource resource = new HighValueTransactionResource();
         final BankManager bankManager = mock(BankManager.class);
         when(bankManager.getAccount(12345)).thenReturn(new Account());
-        when(bankManager.getHighValueTransactionsForAccount(12345, new BigDecimal("100")))
-            .thenReturn(Collections.<Transaction>emptyList());
+        when(bankManager.getHighValueTransactionsForAccount(12345, new BigDecimal("1000000.00")))
+            .thenReturn(Collections.emptyList());
         resource.setBankManager(bankManager);
 
-        final Response response = resource.getHighValueTransactions(12345, "100");
+        final Response response = resource.getHighValueTransactions(12345, "1000000.00");
+
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        @SuppressWarnings("unchecked")
-        final List<Transaction> body = (List<Transaction>) response.getEntity();
-        assertEquals(0, body.size());
+        assertEquals(Collections.emptyList(), response.getEntity());
     }
 
     @Test
-    public void testGetHighValueTransactionsMissingThresholdReturns400() {
-        final HighValueTransactionResource resource = new HighValueTransactionResource();
-        final BankManager bankManager = mock(BankManager.class);
-        resource.setBankManager(bankManager);
-
-        final Response response = resource.getHighValueTransactions(12345, null);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void testGetHighValueTransactionsInvalidThresholdReturns400() {
-        final HighValueTransactionResource resource = new HighValueTransactionResource();
-        final BankManager bankManager = mock(BankManager.class);
-        resource.setBankManager(bankManager);
-
-        final Response response = resource.getHighValueTransactions(12345, "not-a-number");
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void testGetHighValueTransactionsUnknownAccountReturns404() {
+    public void testGetHighValueTransactionsForUnknownAccount() {
         final HighValueTransactionResource resource = new HighValueTransactionResource();
         final BankManager bankManager = mock(BankManager.class);
         when(bankManager.getAccount(-1)).thenThrow(new EmptyResultDataAccessException(1));
         resource.setBankManager(bankManager);
 
-        final Response response = resource.getHighValueTransactions(-1, "100");
+        final Response response = resource.getHighValueTransactions(-1, "1000.00");
+
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testGetHighValueTransactionsWithMissingThreshold() {
+        final HighValueTransactionResource resource = new HighValueTransactionResource();
+        final BankManager bankManager = mock(BankManager.class);
+        resource.setBankManager(bankManager);
+
+        final Response response = resource.getHighValueTransactions(12345, null);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testGetHighValueTransactionsWithInvalidThreshold() {
+        final HighValueTransactionResource resource = new HighValueTransactionResource();
+        final BankManager bankManager = mock(BankManager.class);
+        resource.setBankManager(bankManager);
+
+        final Response response = resource.getHighValueTransactions(12345, "not-a-number");
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 }

@@ -25,7 +25,8 @@ public class HighValueTransactionResource {
 
     @GET
     @Path("/{accountId}/transactions/highValue")
-    @Operation(summary = "Get high value transactions for an account", tags = { ParaBankServiceConstants.TRANSACTIONS })
+    @Operation(summary = "Get high-value transactions for an account", tags = { ParaBankServiceConstants.ACCOUNTS,
+        ParaBankServiceConstants.TRANSACTIONS })
     public Response getHighValueTransactions(
         @Parameter(required = true) @PathParam("accountId") final int accountId,
         @Parameter(required = true) @QueryParam("threshold") final String threshold) {
@@ -35,23 +36,23 @@ public class HighValueTransactionResource {
         }
 
         try {
-            bankManager.getAccount(accountId);
+            if (bankManager.getAccount(accountId) != null) {
+                final List<Transaction> transactions =
+                    bankManager.getHighValueTransactionsForAccount(accountId, parsedThreshold);
+                return Response.ok(transactions).build();
+            }
         } catch (final EmptyResultDataAccessException ex) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        final List<Transaction> transactions =
-            bankManager.getHighValueTransactionsForAccount(accountId, parsedThreshold);
-        return Response.ok(transactions).build();
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     private BigDecimal parseThreshold(final String threshold) {
-        if (threshold == null || threshold.trim().isEmpty()) {
+        if (threshold == null || threshold.isBlank()) {
             return null;
         }
-
         try {
-            return new BigDecimal(threshold.trim());
+            return new BigDecimal(threshold);
         } catch (final NumberFormatException ex) {
             return null;
         }

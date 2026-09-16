@@ -279,7 +279,9 @@ public class BankManagerImpl implements BankManager {
     /*
      * (non-Javadoc)
      *
-     * @see com.parasoft.parabank.domain.logic.BankManager#getHighValueTransactionsForAccount(int, java.math.BigDecimal)
+     * @see
+     * com.parasoft.parabank.domain.logic.BankManager#getHighValueTransactionsForAccount(int,
+     * java.math.BigDecimal)
      */
     @Override
     public List<Transaction> getHighValueTransactionsForAccount(final int accountId, final BigDecimal threshold) {

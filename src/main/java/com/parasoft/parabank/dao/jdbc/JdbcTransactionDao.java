@@ -127,7 +127,8 @@ public class JdbcTransactionDao extends NamedParameterJdbcDaoSupport implements 
     /*
      * (non-Javadoc)
      *
-     * @see com.parasoft.parabank.dao.TransactionDao#getHighValueTransactionsForAccount(int, java.math.BigDecimal)
+     * @see com.parasoft.parabank.dao.TransactionDao#getHighValueTransactionsForAccount(int,
+     * java.math.BigDecimal)
      */
     @Override
     public List<Transaction> getHighValueTransactionsForAccount(final int accountId, final BigDecimal threshold) {
@@ -136,7 +137,7 @@ public class JdbcTransactionDao extends NamedParameterJdbcDaoSupport implements 
 
         final List<Transaction> transactions =
             getJdbcTemplate().query(SQL, new TransactionMapper(), accountId, threshold);
-        log.info("Retrieved " + transactions.size() + " high value transactions for accountId = " + accountId
+        log.info("Retrieved " + transactions.size() + " high-value transactions for accountId = " + accountId
             + " with threshold = " + threshold);
 
         return transactions;

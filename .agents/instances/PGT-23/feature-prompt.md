@@ -6,19 +6,17 @@ Use this template to define one feature or story. Generate a feature-specific in
 
 - Feature name: Add High-Value Transaction Alerts API
 - Branch: feature/PGT-23-high-value-transaction-alerts-api
-- Owner: Copilot CLI automated delivery run
+- Owner: Not specified in issue — confirm before implementation
 - Target milestone / release: Not specified in issue — confirm before implementation
 - Related issue or ticket: PGT-23
 
 ## Business Goal
 
-Support staff need a quick way to review large/suspicious transactions on an account for
-fraud and large-payment review, without a new data model.
+Support staff need a quick way to review large/suspicious transactions on an account for fraud and large-payment review, without a new data model.
 
 ## Problem Statement
 
-Transaction history exists (TransactionDao#getTransactionsForAccount), but there is no
-filtered view for transactions at or above a given amount, and no REST endpoint exposes it.
+Transaction history exists (TransactionDao#getTransactionsForAccount), but there is no filtered view for transactions at or above a given amount, and no REST endpoint exposes it.
 
 ## Scope
 
@@ -40,8 +38,11 @@ filtered view for transactions at or above a given amount, and no REST endpoint 
 
 ## Locked Decisions
 
-- Reuse the existing `Transaction` domain object as-is; do not add a new domain class for this feature
-- Endpoint path: `/accounts/{accountId}/transactions/highValue`
+List any decisions that are already considered final and must not be changed casually.
+
+- Decision 1: Reuse the existing `Transaction` domain object as-is; do not add a new domain class for this feature
+- Decision 2: Endpoint path: `/accounts/{accountId}/transactions/highValue`
+- Decision 3: Not specified in issue — confirm before implementation
 
 ## Functional Requirements
 
@@ -52,14 +53,18 @@ filtered view for transactions at or above a given amount, and no REST endpoint 
 
 ## API / Data Contract
 
+Describe the required external behavior, endpoints, payload shape, validation rules, and response semantics.
+
 - Endpoint(s): GET /accounts/{accountId}/transactions/highValue?threshold={amount}
-- Request contract: path param `accountId` (int), query param `threshold` (decimal amount)
+- Request contract: Path parameter `accountId` (int); query parameter `threshold` (amount)
 - Response contract: array of existing `Transaction` JSON representation
 - Error handling: 400 for missing/invalid threshold, 404 for unknown account
 - Persistence requirements: none (read-only query against existing Transaction table)
 - Ordering or sorting rules: transaction date DESC, id DESC
 
 ## Implementation Anchors
+
+List the files, classes, modules, or areas the feature is expected to touch.
 
 - Core code: BankManager / BankManagerImpl (new passthrough method)
 - Data layer: dao/TransactionDao.java, dao/jdbc/JdbcTransactionDao.java (new query method only)
@@ -77,6 +82,8 @@ filtered view for transactions at or above a given amount, and no REST endpoint 
 
 ## Quality Gates
 
+Define the thresholds and validations that must pass before completion.
+
 - Static analysis: builtin://CWE Top 25 + On the Cusp 2025, no new CRITICAL/HIGH findings vs baseline
 - Unit tests: new tests for the DAO query and resource only
 - Functional/API tests: SOAtest scenario covering found/empty/400/404 cases
@@ -88,18 +95,18 @@ filtered view for transactions at or above a given amount, and no REST endpoint 
 
 - External dependency 1: Not specified in issue — confirm before implementation
 - Known risk 1: Not specified in issue — confirm before implementation
-- Required environment or credentials: DTP_URL, DTP_USER, DTP_PASSWORD (present in environment)
+- Required environment or credentials: Not specified in issue — confirm before implementation
 
 ## Validation Evidence Required
+
+List the artifacts that must exist before the feature is considered complete.
 
 - SA report: jtest-run-sa
 - UT report: jtest-run-ut
 - Functional or API report: SOAtest functional/API report with coverage (soatest-orchestration)
 - Coverage report: jtest-cov-analysis
-- DTP or CI build reference: JTEST_BUILD_ID resolved for this run
+- DTP or CI build reference: Accountability report + PR link; JTEST_BUILD_ID=Parabank-Jenkins-local-20260916
 
 ## Definition of Done
 
-Complete only when all acceptance criteria are met, all required validation evidence exists,
-and no blocking quality gate remains unresolved. This issue is a local pipeline dry-run to
-validate the CICD workflow before PGT-22.
+The feature is complete only when all acceptance criteria are met, all required validation evidence exists, and no blocking quality gate remains unresolved. This issue is a local pipeline dry-run to validate the CICD workflow before PGT-22.

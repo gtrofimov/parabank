@@ -38,7 +38,7 @@ public interface TransactionDao {
 
     /**
      * Retrieve transactions for a given account with an amount at or above the given threshold,
-     * ordered most recent first (transaction date descending, then id descending)
+     * ordered by transaction date descending, then id descending (most recent first)
      *
      * @param accountId the account id to lookup
      * @param threshold the minimum transaction amount (inclusive) to match

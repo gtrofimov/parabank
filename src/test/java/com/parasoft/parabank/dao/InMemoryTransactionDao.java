@@ -72,16 +72,14 @@ public class InMemoryTransactionDao implements TransactionDao {
         List<Transaction> accountTransactions = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
-            if (transaction.getAccountId() == accountId
-                    && transaction.getAmount() != null
-                    && transaction.getAmount().compareTo(threshold) >= 0) {
+            if (transaction.getAccountId() == accountId && transaction.getAmount() != null
+                && transaction.getAmount().compareTo(threshold) >= 0) {
                 accountTransactions.add(transaction);
             }
         }
 
-        accountTransactions.sort(Comparator.comparing(Transaction::getDate)
-                .thenComparing(Transaction::getId)
-                .reversed());
+        accountTransactions.sort(Comparator.comparing(Transaction::getDate,
+            Comparator.nullsFirst(Comparator.naturalOrder())).thenComparing(Transaction::getId).reversed());
 
         return accountTransactions;
     }
