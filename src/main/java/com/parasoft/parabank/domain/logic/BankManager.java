@@ -197,6 +197,15 @@ public interface BankManager {
     List<Transaction> getTransactionsForAccount(int accountId, TransactionCriteria criteria);
 
     /**
+     * Retrieve transactions for a given account with an amount at or above the given threshold
+     *
+     * @param accountId the account id to lookup
+     * @param threshold the minimum transaction amount (inclusive) to match
+     * @return list of matching transactions for the given account, ordered most recent first
+     */
+    List<Transaction> getHighValueTransactionsForAccount(int accountId, BigDecimal threshold);
+
+    /**
      * Transfer funds between two accounts
      *
      * @param fromAccountId the account from which to withdraw money

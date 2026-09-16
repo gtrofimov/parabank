@@ -124,6 +124,25 @@ public class JdbcTransactionDao extends NamedParameterJdbcDaoSupport implements 
         return new JdbcTransactionQueryRestrictor().getRestrictions(criteria, params);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.parasoft.parabank.dao.TransactionDao#getHighValueTransactionsForAccount(int,
+     * java.math.BigDecimal)
+     */
+    @Override
+    public List<Transaction> getHighValueTransactionsForAccount(final int accountId, final BigDecimal threshold) {
+        final String SQL =
+            "SELECT id, account_id, type, date, amount, description FROM Transaction WHERE account_id = ? AND amount >= ? ORDER BY date DESC, id DESC";
+
+        final List<Transaction> transactions =
+            getJdbcTemplate().query(SQL, new TransactionMapper(), accountId, threshold);
+        log.info("Retrieved " + transactions.size() + " high-value transactions for accountId = " + accountId
+            + " with threshold = " + threshold);
+
+        return transactions;
+    }
+
     public void setSequenceDao(final JdbcSequenceDao sequenceDao) {
         this.sequenceDao = sequenceDao;
     }
