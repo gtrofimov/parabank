@@ -33,6 +33,24 @@ jtestcli -data target/jtest/jtest.data.json -config "builtin://CWE Top 25 + On t
 jtestcli -data target/jtest/jtest.data.json -config "builtin://CWE Top 25 + On the Cusp 2025" -resource "**/src/main/java/com/parasoft/parabank/web/**"
 ```
 
+For feature-branch delta analysis, use Jtest's native source-control scope
+against the fetched reference revision. The reference must be the remote-tracking
+revision, not the local branch name:
+
+```bash
+jtestcli -data target/jtest/jtest.data.json \
+   -config "builtin://CWE Top 25 + On the Cusp 2025" \
+   -property scope.scontrol=true \
+   -property scope.files.time.filter.mode=4 \
+   -property scope.lines.time.filter.mode=4 \
+   -property scope.default.branch=false \
+   -property scope.branch="origin/${JTEST_REFERENCE_BRANCH:-master}"
+```
+
+This makes Jtest compare the current feature branch with
+`origin/${JTEST_REFERENCE_BRANCH:-master}` and analyze only changed files and
+lines. Add `-include` only when an even narrower path scope is required.
+
 4. Retrieve violations using `mcp_jtest_get_violations_from_report_file` (sequential calls only).
 5. Retrieve rule details for prioritized findings using `mcp_jtest_get_rule_documentation` (sequential calls only):
    - include all CRITICAL and HIGH severity findings
@@ -72,7 +90,7 @@ Provide:
 ## Completion Checks
 - `jtestcli` completed without errors.
 - requested scope/config is reflected in the final command.
-- violations were obtained via approved Jtest tooling (MCP or allowed shell/custom parser path), and parser path was reported.
+- violations were obtained through the mandatory `jtest-cicd` MCP tooling.
 
 ## Decision Rules
 - Default config: `builtin://CWE Top 25 + On the Cusp 2025`.

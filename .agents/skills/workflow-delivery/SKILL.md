@@ -97,16 +97,18 @@ the SOAVirt MCP server for stateless virtual-service prototypes and load
 `virtualize-stateful-virtual-service-creator` only for stateful service work.
 Load `soavirt-upload` only for SOAVirt file staging.
 
-Before exiting this phase, run full regression once, even if scoped/targeted
-runs already passed during implementation — a scoped run does not prove the
-rest of the suite still passes after all commits in the branch:
-- `jtest-run-ut` with no scope filter (unit tests)
-- all existing SOAtest scenarios for the affected app, run individually per
-  scenario rather than batched into one `soatestcli` call — batching
-  unrelated scenarios together can surface cross-scenario extraction-variable
-  interaction failures that are not real regressions. Verify any failure with
-  an isolated single-scenario rerun before treating it as a regression caused
-  by this branch.
+For the Jira feature-intake CI path, the Act phase is the validation gate:
+- `jtest-run-sa` is scoped to production files changed from
+  `JTEST_REFERENCE_BRANCH` and compares findings with that reference.
+- `jtest-run-ut` is scoped to newly generated tests with Maven `-Dtest`; Jtest
+  `-include` is used only for source coverage selection.
+- SOAtest runs only newly created feature scenarios, one resource at a time.
+
+Verify consumes those scoped reports through DTP MCP and reruns only a missing
+or failed scoped gate. It does not launch a full-project regression or rerun a
+passed gate. A full UT regression and all existing SOAtest scenarios remain
+available as an explicit release or branch-validation request, but are not
+part of the default feature-intake fast path.
 
 Exit when all required gates have evidence attached.
 
