@@ -153,6 +153,7 @@
 		<jaxrs:serviceBeans>
 			<ref bean="paraBankService" />
 			<ref bean="loanRequestHistoryResource" />
+			<ref bean="highValueTransactionResource" />
 		</jaxrs:serviceBeans>
 
 		<jaxrs:providers>
@@ -197,6 +198,10 @@
 	</bean>
 
 	<bean id="loanRequestHistoryResource" class="com.parasoft.parabank.service.LoanRequestHistoryResource">
+		<property name="bankManager" ref="bankManager" />
+	</bean>
+
+	<bean id="highValueTransactionResource" class="com.parasoft.parabank.service.HighValueTransactionResource">
 		<property name="bankManager" ref="bankManager" />
 	</bean>
 

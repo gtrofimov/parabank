@@ -220,6 +220,30 @@ public class JdbcTransactionDaoTest extends AbstractParaBankDataSourceTest {
     }
 
     @Test
+    public void testGetHighValueTransactionsForAccount() {
+        final List<Transaction> transactions =
+            transactionDao.getHighValueTransactionsForAccount(12345, new BigDecimal("1000"));
+        assertEquals(3, transactions.size());
+        assertEquals(14143, transactions.get(0).getId());
+        assertEquals(13477, transactions.get(1).getId());
+        assertEquals(12589, transactions.get(2).getId());
+    }
+
+    @Test
+    public void testGetHighValueTransactionsForAccountNoMatches() {
+        final List<Transaction> transactions =
+            transactionDao.getHighValueTransactionsForAccount(12345, new BigDecimal("100000"));
+        assertEquals(0, transactions.size());
+    }
+
+    @Test
+    public void testGetHighValueTransactionsForUnknownAccount() {
+        final List<Transaction> transactions =
+            transactionDao.getHighValueTransactionsForAccount(-1, new BigDecimal("0"));
+        assertEquals(0, transactions.size());
+    }
+
+    @Test
     public void testGetTransactionsForAccountWithIdCriterion() {
         final TransactionCriteria criteria = new TransactionCriteria();
         criteria.setSearchType(SearchType.ID);
